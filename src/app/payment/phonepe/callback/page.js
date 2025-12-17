@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
 import { api } from '../../../../services/api';
@@ -8,7 +8,7 @@ import { useCart } from '../../../../context/CartContext';
 import Header from '../../../../components/Header';
 import Footer from '../../../../components/Footer';
 
-export default function PhonePeCallbackPage() {
+function PhonePeCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { clearCart } = useCart();
@@ -236,5 +236,21 @@ export default function PhonePeCallbackPage() {
                 }
             `}</style>
         </>
+    );
+}
+
+export default function PhonePeCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{
+                    width: '40px', height: '40px',
+                    border: '3px solid #e5e7eb', borderTopColor: '#5f259f',
+                    borderRadius: '50%', animation: 'spin 1s linear infinite'
+                }}></div>
+            </div>
+        }>
+            <PhonePeCallbackContent />
+        </Suspense>
     );
 }
