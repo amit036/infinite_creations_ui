@@ -27,9 +27,9 @@ export const metadata = {
     description: 'Discover premium quality products at unbeatable prices. Shop electronics, clothing, home & living, and accessories.',
     images: [
       {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
+        url: 'https://infinite-creations-ui.vercel.app/og-image.png',
+        width: 512,
+        height: 512,
         alt: 'Infinite Creations - Premium Online Store',
       },
     ],
@@ -38,7 +38,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Infinite Creations - Premium Online Store',
     description: 'Discover premium quality products at unbeatable prices.',
-    images: ['/og-image.png'],
+    images: ['https://infinite-creations-ui.vercel.app/og-image.png'],
   },
   robots: {
     index: true,

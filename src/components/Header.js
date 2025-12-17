@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../assets/logo.png';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, User, Search, Heart } from 'lucide-react';
+import { ShoppingCart, User, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { API_URL } from '../services/api';
@@ -35,6 +35,18 @@ export default function Header() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Close menu on route change
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [mobileMenuOpen]);
+
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     const navLinks = [
@@ -53,88 +65,59 @@ export default function Header() {
             {/* Top Bar - Controlled by Admin */}
             {promoSettings && promoSettings.promoBarEnabled && (
                 <div style={{
-                    background: `linear-gradient(135deg, ${promoSettings.promoBarBgColor} 0%, ${promoSettings.promoBarBgColor}cc 50%, ${promoSettings.promoBarBgColor} 100%)`,
-                    color: promoSettings.promoBarTextColor,
-                    fontSize: '13px',
+                    background: promoSettings.promoBarBgColor || '#4f46e5',
+                    color: promoSettings.promoBarTextColor || 'white',
+                    fontSize: '11px',
                     fontWeight: '500',
-                    letterSpacing: '0.3px',
-                    height: '36px',
+                    height: '28px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '0 16px',
-                    overflow: 'hidden',
-                    boxSizing: 'border-box',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                    position: 'relative'
+                    padding: '0 8px',
+                    overflow: 'hidden'
                 }}>
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%)',
-                        pointerEvents: 'none'
-                    }} />
-                    <div style={{ width: '100%', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '14px' }}>🎉</span>
-                        <span>{promoSettings.promoBarMessage.replace(/^🎉\s*/, '')}</span>
-                    </div>
+                    <span style={{ textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        🎉 {promoSettings.promoBarMessage.replace(/^🎉\s*/, '')}
+                    </span>
                 </div>
             )}
 
             {/* Main Header */}
             <header style={{
-                background: scrolled ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,1)',
+                background: scrolled ? 'rgba(255,255,255,0.98)' : 'white',
                 backdropFilter: scrolled ? 'blur(12px)' : 'none',
-                borderBottom: '1px solid rgba(229, 231, 235, 0.8)',
-                boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0, 0, 0, 0.05)',
+                borderBottom: '1px solid #e5e7eb',
+                boxShadow: scrolled ? '0 2px 10px rgba(0, 0, 0, 0.06)' : 'none',
                 transition: 'all 0.3s ease',
-                height: '72px',
+                height: '56px',
                 display: 'flex',
-                alignItems: 'center',
-                boxSizing: 'border-box'
+                alignItems: 'center'
             }}>
                 <div className="page-container" style={{ width: '100%' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         {/* Logo */}
-                        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-                            <div style={{
-                                width: '55px',
-                                height: '55px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                position: 'relative'
+                        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
+                            <Image
+                                src={logo}
+                                alt="IC"
+                                width={32}
+                                height={32}
+                                style={{ objectFit: 'contain', flexShrink: 0 }}
+                            />
+                            <span style={{
+                                fontSize: '18px',
+                                fontWeight: '700',
+                                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                whiteSpace: 'nowrap'
                             }}>
-                                <Image
-                                    src={logo}
-                                    alt="Infinite Creations"
-                                    width={55}
-                                    height={55}
-                                    style={{
-                                        objectFit: 'contain'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <span style={{
-                                    fontSize: '21px',
-                                    fontWeight: '700',
-                                    letterSpacing: '-0.5px',
-                                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent'
-                                }}>
-                                    Infinite Creations
-                                </span>
-                                <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '1px', fontWeight: '500', letterSpacing: '0.5px' }}>Premium Quality Products</p>
-                            </div>
+                                Infinite Creations
+                            </span>
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+                        <nav className="desktop-nav">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
@@ -142,10 +125,10 @@ export default function Header() {
                                     style={{
                                         color: '#374151',
                                         fontWeight: 500,
+                                        fontSize: '14px',
                                         textDecoration: 'none',
-                                        padding: '8px 0',
-                                        borderBottom: '2px solid transparent',
-                                        transition: 'all 0.2s'
+                                        padding: '6px 0',
+                                        transition: 'color 0.2s'
                                     }}
                                     onMouseEnter={(e) => e.target.style.color = '#4f46e5'}
                                     onMouseLeave={(e) => e.target.style.color = '#374151'}
@@ -156,57 +139,30 @@ export default function Header() {
                         </nav>
 
                         {/* Right Side Icons */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            {/* Search */}
-                            <button style={{
-                                padding: '10px',
-                                background: '#f3f4f6',
-                                border: 'none',
-                                borderRadius: '10px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
-                                <Search size={20} color="#6b7280" />
-                            </button>
-
-                            {/* Wishlist */}
-                            {mounted && user && (
-                                <Link href="/profile/wishlist" style={{
-                                    padding: '10px',
-                                    background: '#f3f4f6',
-                                    borderRadius: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Heart size={20} color="#6b7280" />
-                                </Link>
-                            )}
-
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             {/* Cart */}
                             <Link href="/cart" style={{
                                 position: 'relative',
-                                padding: '10px',
+                                width: '36px',
+                                height: '36px',
                                 background: '#f3f4f6',
-                                borderRadius: '10px',
+                                borderRadius: '8px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}>
-                                <ShoppingCart size={20} color="#6b7280" />
+                                <ShoppingCart size={18} color="#374151" />
                                 {mounted && cartCount > 0 && (
                                     <span style={{
                                         position: 'absolute',
                                         top: -4,
                                         right: -4,
-                                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                        background: '#4f46e5',
                                         color: 'white',
-                                        fontSize: '11px',
+                                        fontSize: '10px',
                                         fontWeight: 'bold',
-                                        width: '20px',
-                                        height: '20px',
+                                        width: '16px',
+                                        height: '16px',
                                         borderRadius: '50%',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -216,11 +172,11 @@ export default function Header() {
                                 )}
                             </Link>
 
-                            {/* User */}
+                            {/* User - Desktop */}
                             {mounted && user ? (
-                                <Link href="/profile" style={{
-                                    width: '40px',
-                                    height: '40px',
+                                <Link href="/profile" className="desktop-nav" style={{
+                                    width: '36px',
+                                    height: '36px',
                                     borderRadius: '50%',
                                     background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
                                     display: 'flex',
@@ -237,35 +193,169 @@ export default function Header() {
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
                                     ) : (
-                                        <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '16px' }}>
+                                        <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '13px' }}>
                                             {user.name?.charAt(0).toUpperCase()}
                                         </span>
                                     )}
                                 </Link>
-                            ) : mounted ? (
-                                <Link href="/login" style={{
+                            ) : mounted && (
+                                <Link href="/login" className="desktop-nav" style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '10px 18px',
+                                    gap: '4px',
+                                    padding: '8px 12px',
                                     background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                                     color: 'white',
-                                    borderRadius: '10px',
+                                    borderRadius: '8px',
                                     fontWeight: 600,
-                                    fontSize: '14px',
-                                    textDecoration: 'none',
-                                    boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
-                                    transition: 'all 0.2s'
+                                    fontSize: '13px',
+                                    textDecoration: 'none'
                                 }}>
-                                    <User size={18} /> Sign In
+                                    <User size={16} /> Sign In
                                 </Link>
-                            ) : (
-                                <div style={{ width: '40px', height: '40px' }} />
                             )}
+
+                            {/* Mobile Menu Button */}
+                            <button
+                                className="mobile-menu-btn"
+                                onClick={() => setMobileMenuOpen(true)}
+                                aria-label="Open menu"
+                                style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    background: '#f3f4f6',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <Menu size={20} color="#374151" />
+                            </button>
                         </div>
                     </div>
                 </div>
             </header>
+
+            {/* Mobile Menu Overlay */}
+            <div
+                className={`mobile-menu-overlay ${mobileMenuOpen ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Mobile Menu */}
+            <div className={`mobile-menu ${mobileMenuOpen ? 'active' : ''}`}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#111827' }}>Menu</span>
+                    <button
+                        onClick={() => setMobileMenuOpen(false)}
+                        style={{
+                            width: '32px',
+                            height: '32px',
+                            background: '#f3f4f6',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                        aria-label="Close menu"
+                    >
+                        <X size={18} color="#374151" />
+                    </button>
+                </div>
+
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{
+                                padding: '12px 14px',
+                                background: '#f9fafb',
+                                borderRadius: '8px',
+                                color: '#374151',
+                                fontWeight: 500,
+                                fontSize: '14px',
+                                textDecoration: 'none'
+                            }}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                </nav>
+
+                {/* Mobile Menu User Actions */}
+                <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
+                    {mounted && user ? (
+                        <Link
+                            href="/profile"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '12px 14px',
+                                background: '#f9fafb',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                color: '#374151'
+                            }}
+                        >
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
+                            }}>
+                                {user.avatar ? (
+                                    <img
+                                        src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`}
+                                        alt=""
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '13px' }}>
+                                        {user.name?.charAt(0).toUpperCase()}
+                                    </span>
+                                )}
+                            </div>
+                            <div>
+                                <p style={{ fontWeight: 600, color: '#111827', fontSize: '14px' }}>{user.name}</p>
+                                <p style={{ fontSize: '12px', color: '#6b7280' }}>View Profile</p>
+                            </div>
+                        </Link>
+                    ) : mounted && (
+                        <Link
+                            href="/login"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px',
+                                padding: '12px',
+                                background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                color: 'white',
+                                borderRadius: '8px',
+                                fontWeight: 600,
+                                fontSize: '14px',
+                                textDecoration: 'none'
+                            }}
+                        >
+                            <User size={18} /> Sign In
+                        </Link>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

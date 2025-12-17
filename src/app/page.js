@@ -33,7 +33,7 @@ function ProductCard({ product }) {
   return (
     <div className="product-card" style={{
       background: 'white',
-      borderRadius: '16px',
+      borderRadius: '12px',
       overflow: 'hidden',
       boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
       transition: 'all 0.3s ease'
@@ -52,46 +52,36 @@ function ProductCard({ product }) {
               style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
             />
           ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '48px' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '36px' }}>
               📦
             </div>
           )}
           {hasDiscount && (
             <span style={{
-              position: 'absolute', top: '12px', left: '12px',
+              position: 'absolute', top: '8px', left: '8px',
               background: 'linear-gradient(135deg, #dc2626, #ef4444)',
-              color: 'white', padding: '6px 12px', borderRadius: '20px',
-              fontSize: '12px', fontWeight: 700
+              color: 'white', padding: '4px 8px', borderRadius: '16px',
+              fontSize: '10px', fontWeight: 700
             }}>
-              -{Math.round((1 - Number(product.salePrice) / Number(product.price)) * 100)}% OFF
-            </span>
-          )}
-          {product.featured && (
-            <span style={{
-              position: 'absolute', top: hasDiscount ? '48px' : '12px', left: '12px',
-              background: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
-              color: '#78350f', padding: '4px 10px', borderRadius: '20px',
-              fontSize: '11px', fontWeight: 600
-            }}>
-              ⭐ Featured
+              -{Math.round((1 - Number(product.salePrice) / Number(product.price)) * 100)}%
             </span>
           )}
         </div>
       </Link>
-      <div style={{ padding: '16px' }}>
-        <p style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+      <div style={{ padding: '12px' }}>
+        <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           {product.category?.name || 'Product'}
         </p>
         <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
-          <h3 style={{ fontWeight: 600, color: '#111827', marginBottom: '10px', fontSize: '15px', lineHeight: 1.4 }}>{product.name}</h3>
+          <h3 style={{ fontWeight: 600, color: '#111827', marginBottom: '8px', fontSize: '14px', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</h3>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#111827' }}>
               {formatPrice(displayPrice)}
             </span>
             {hasDiscount && (
-              <span style={{ fontSize: '14px', color: '#9ca3af', textDecoration: 'line-through' }}>
+              <span style={{ fontSize: '12px', color: '#9ca3af', textDecoration: 'line-through' }}>
                 {formatPrice(product.price)}
               </span>
             )}
@@ -100,40 +90,40 @@ function ProductCard({ product }) {
             <button
               disabled
               style={{
-                padding: '8px 16px',
+                padding: '6px 12px',
                 background: '#f3f4f6',
                 color: '#9ca3af',
                 border: 'none',
-                borderRadius: '20px',
+                borderRadius: '16px',
                 fontWeight: 600,
-                fontSize: '13px',
+                fontSize: '12px',
                 cursor: 'not-allowed'
               }}
             >
-              Out of Stock
+              Out
             </button>
           ) : quantity > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <button
                 onClick={() => quantity === 1 ? removeFromCart(product.id) : updateQuantity(product.id, quantity - 1)}
                 style={{
-                  width: '30px', height: '30px', borderRadius: '8px',
+                  width: '28px', height: '28px', borderRadius: '8px',
                   background: '#f3f4f6', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px'
                 }}
               >
                 −
               </button>
-              <span style={{ fontWeight: 600, minWidth: '24px', textAlign: 'center' }}>{quantity}</span>
+              <span style={{ fontWeight: 600, minWidth: '20px', textAlign: 'center', fontSize: '14px' }}>{quantity}</span>
               <button
                 onClick={() => updateQuantity(product.id, quantity + 1)}
                 disabled={quantity >= product.stock}
                 style={{
-                  width: '30px', height: '30px', borderRadius: '8px',
+                  width: '28px', height: '28px', borderRadius: '8px',
                   background: quantity >= product.stock ? '#e5e7eb' : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                   color: quantity >= product.stock ? '#9ca3af' : 'white',
                   border: 'none', cursor: quantity >= product.stock ? 'not-allowed' : 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px'
                 }}
               >
                 +
@@ -143,13 +133,13 @@ function ProductCard({ product }) {
             <button
               onClick={() => addToCart(product)}
               style={{
-                padding: '8px 16px',
+                padding: '6px 14px',
                 background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '20px',
+                borderRadius: '16px',
                 fontWeight: 600,
-                fontSize: '13px',
+                fontSize: '12px',
                 cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)'
               }}
@@ -175,7 +165,6 @@ function LoadingSpinner() {
         borderRadius: '50%',
         animation: 'spin 1s linear infinite'
       }}></div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
@@ -221,9 +210,8 @@ export default function HomePage() {
 
       <main style={{ background: '#f9fafb' }}>
         {/* Hero Section */}
-        <section style={{
+        <section className="hero-section" style={{
           background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4f46e5 100%)',
-          padding: '80px 0',
           position: 'relative',
           overflow: 'hidden'
         }}>
@@ -241,22 +229,16 @@ export default function HomePage() {
             <div style={{ maxWidth: '700px' }}>
               <span style={{
                 display: 'inline-block',
-                padding: '8px 16px',
+                padding: '6px 14px',
                 background: 'rgba(255,255,255,0.15)',
                 borderRadius: '20px',
                 color: 'white',
-                fontSize: '14px',
-                marginBottom: '20px'
+                fontSize: '13px',
+                marginBottom: '16px'
               }}>
                 🎉 New Arrivals Available Now
               </span>
-              <h1 style={{
-                fontSize: '56px',
-                fontWeight: 800,
-                color: 'white',
-                lineHeight: 1.1,
-                marginBottom: '20px'
-              }}>
+              <h1 className="hero-title" style={{ color: 'white' }}>
                 Premium Quality<br />
                 <span style={{
                   background: 'linear-gradient(to right, #a5b4fc, #c4b5fd)',
@@ -264,38 +246,14 @@ export default function HomePage() {
                   WebkitTextFillColor: 'transparent'
                 }}>Products for You</span>
               </h1>
-              <p style={{ color: '#c7d2fe', fontSize: '18px', lineHeight: 1.7, marginBottom: '32px', maxWidth: '500px' }}>
+              <p className="hero-subtitle" style={{ color: '#c7d2fe', maxWidth: '500px' }}>
                 Discover curated products from top brands. Free shipping on orders over ₹2,000.
               </p>
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <Link href="/shop" style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '16px 32px',
-                  background: 'white',
-                  color: '#4f46e5',
-                  borderRadius: '12px',
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  textDecoration: 'none',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
-                }}>
+              <div className="hero-buttons">
+                <Link href="/shop" className="hero-btn-primary">
                   Shop Now <ArrowRight size={20} />
                 </Link>
-                <Link href="/shop?featured=true" style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '16px 32px',
-                  background: 'transparent',
-                  color: 'white',
-                  borderRadius: '12px',
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  textDecoration: 'none',
-                  border: '2px solid rgba(255,255,255,0.3)'
-                }}>
+                <Link href="/shop?featured=true" className="hero-btn-secondary">
                   View Featured
                 </Link>
               </div>
@@ -304,29 +262,29 @@ export default function HomePage() {
         </section>
 
         {/* Categories */}
-        <section className="page-container" style={{ paddingTop: '64px', paddingBottom: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <section className="page-container section-padding">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>Shop by Category</h2>
-              <p style={{ color: '#6b7280', marginTop: '4px' }}>Browse our wide selection of products</p>
+              <h2 className="section-title">Shop by Category</h2>
+              <p style={{ color: '#6b7280', marginTop: '4px', fontSize: '14px' }}>Browse our wide selection of products</p>
             </div>
             <Link href="/shop" style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              color: '#4f46e5', fontWeight: 600, textDecoration: 'none'
+              display: 'flex', alignItems: 'center', gap: '4px',
+              color: '#4f46e5', fontWeight: 600, textDecoration: 'none', fontSize: '14px'
             }}>
-              View All <ChevronRight size={20} />
+              View All <ChevronRight size={18} />
             </Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+          <div className="category-grid">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/shop?category=${cat.slug}`}
                 style={{
-                  padding: '28px',
+                  padding: '20px',
                   background: 'white',
-                  borderRadius: '16px',
+                  borderRadius: '12px',
                   textDecoration: 'none',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                   transition: 'all 0.3s',
@@ -334,41 +292,41 @@ export default function HomePage() {
                 }}
               >
                 <div style={{
-                  width: '56px', height: '56px', borderRadius: '12px',
+                  width: '48px', height: '48px', borderRadius: '10px',
                   background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '16px', fontSize: '24px'
+                  marginBottom: '12px', fontSize: '22px'
                 }}>
                   {cat.slug === 'electronics' ? '📱' :
                     cat.slug === 'clothing' ? '👕' :
                       cat.slug === 'home-living' ? '🏠' : '🎒'}
                 </div>
-                <h3 style={{ fontWeight: 600, color: '#111827', marginBottom: '4px' }}>{cat.name}</h3>
-                <p style={{ fontSize: '14px', color: '#6b7280' }}>{cat._count?.products || 0} products</p>
+                <h3 style={{ fontWeight: 600, color: '#111827', marginBottom: '2px', fontSize: '15px' }}>{cat.name}</h3>
+                <p style={{ fontSize: '13px', color: '#6b7280' }}>{cat._count?.products || 0} products</p>
               </Link>
             ))}
           </div>
         </section>
 
         {/* Featured Products */}
-        <section className="page-container" style={{ paddingTop: '32px', paddingBottom: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <section className="page-container" style={{ paddingBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>Featured Products</h2>
-              <p style={{ color: '#6b7280', marginTop: '4px' }}>Handpicked items just for you</p>
+              <h2 className="section-title">Featured Products</h2>
+              <p style={{ color: '#6b7280', marginTop: '4px', fontSize: '14px' }}>Handpicked items just for you</p>
             </div>
             <Link href="/shop?featured=true" style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              color: '#4f46e5', fontWeight: 600, textDecoration: 'none'
+              display: 'flex', alignItems: 'center', gap: '4px',
+              color: '#4f46e5', fontWeight: 600, textDecoration: 'none', fontSize: '14px'
             }}>
-              View All <ChevronRight size={20} />
+              View All <ChevronRight size={18} />
             </Link>
           </div>
 
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+            <div className="product-grid">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -377,32 +335,28 @@ export default function HomePage() {
         </section>
 
         {/* Banner */}
-        <section className="page-container" style={{ paddingTop: '32px', paddingBottom: '32px' }}>
-          <div style={{
+        <section className="page-container" style={{ paddingTop: '16px', paddingBottom: '32px' }}>
+          <div className="promo-banner" style={{
             background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-            borderRadius: '24px',
-            padding: '48px 56px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
             color: 'white'
           }}>
             <div>
-              <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>
+              <h2 style={{ fontWeight: 'bold', marginBottom: '8px' }}>
                 Get 25% Off Your First Order
               </h2>
-              <p style={{ fontSize: '18px', opacity: 0.9 }}>
-                Use code <strong style={{ background: 'white', color: '#4f46e5', padding: '2px 12px', borderRadius: '6px' }}>FLASH25</strong> at checkout
+              <p style={{ fontSize: '16px', opacity: 0.9 }}>
+                Use code <strong style={{ background: 'white', color: '#4f46e5', padding: '2px 10px', borderRadius: '6px' }}>FLASH25</strong> at checkout
               </p>
             </div>
             <Link href="/shop" style={{
-              padding: '16px 32px',
+              padding: '14px 28px',
               background: 'white',
               color: '#4f46e5',
               borderRadius: '12px',
               fontWeight: 700,
               textDecoration: 'none',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+              flexShrink: 0
             }}>
               Shop Now
             </Link>
@@ -410,24 +364,24 @@ export default function HomePage() {
         </section>
 
         {/* New Arrivals */}
-        <section className="page-container" style={{ paddingTop: '32px', paddingBottom: '64px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <section className="page-container section-padding" style={{ paddingTop: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>New Arrivals</h2>
-              <p style={{ color: '#6b7280', marginTop: '4px' }}>Check out our latest products</p>
+              <h2 className="section-title">New Arrivals</h2>
+              <p style={{ color: '#6b7280', marginTop: '4px', fontSize: '14px' }}>Check out our latest products</p>
             </div>
             <Link href="/shop" style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              color: '#4f46e5', fontWeight: 600, textDecoration: 'none'
+              display: 'flex', alignItems: 'center', gap: '4px',
+              color: '#4f46e5', fontWeight: 600, textDecoration: 'none', fontSize: '14px'
             }}>
-              View All <ChevronRight size={20} />
+              View All <ChevronRight size={18} />
             </Link>
           </div>
 
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+            <div className="product-grid">
               {newArrivals.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
