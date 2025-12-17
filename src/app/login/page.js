@@ -265,12 +265,7 @@ function LoginForm() {
                 </p>
             </div>
 
-            {/* Demo Accounts */}
-            <div style={{ marginTop: '24px', padding: '16px', background: '#f9fafb', borderRadius: '8px' }}>
-                <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', fontWeight: 500 }}>Demo Accounts:</p>
-                <p style={{ fontSize: '12px', color: '#6b7280' }}>Admin: admin@shop.com / password123</p>
-                <p style={{ fontSize: '12px', color: '#6b7280' }}>User: user@shop.com / password123</p>
-            </div>
+
 
             <div style={{ textAlign: 'center', marginTop: '24px' }}>
                 <Link href="/" style={{ color: '#6b7280', fontSize: '14px', textDecoration: 'none' }}>
