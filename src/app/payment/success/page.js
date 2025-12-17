@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
-import { api } from '../../../../services/api';
-import { useCart } from '../../../../context/CartContext';
-import Header from '../../../../components/Header';
-import Footer from '../../../../components/Footer';
+import { api } from '../../../services/api';
+import { useCart } from '../../../context/CartContext';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
 
 export default function PayPalSuccessPage() {
     const router = useRouter();

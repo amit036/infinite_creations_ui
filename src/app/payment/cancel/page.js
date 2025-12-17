@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { XCircle } from 'lucide-react';
-import Header from '../../../../components/Header';
-import Footer from '../../../../components/Footer';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
 
 export default function PaymentCancelPage() {
     const router = useRouter();
