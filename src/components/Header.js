@@ -100,8 +100,8 @@ export default function Header() {
                             <Image
                                 src={logo}
                                 alt="IC"
-                                width={32}
-                                height={32}
+                                width={36}
+                                height={36}
                                 style={{ objectFit: 'contain', flexShrink: 0 }}
                             />
                             <span style={{
@@ -172,48 +172,50 @@ export default function Header() {
                                 )}
                             </Link>
 
-                            {/* User - Desktop */}
-                            {mounted && user ? (
-                                <Link href="/profile" className="desktop-nav" style={{
-                                    width: '36px',
-                                    height: '36px',
-                                    borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    overflow: 'hidden',
-                                    textDecoration: 'none',
-                                    border: '2px solid #c7d2fe'
-                                }}>
-                                    {user.avatar ? (
-                                        <img
-                                            src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`}
-                                            alt=""
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    ) : (
-                                        <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '13px' }}>
-                                            {user.name?.charAt(0).toUpperCase()}
-                                        </span>
-                                    )}
-                                </Link>
-                            ) : mounted && (
-                                <Link href="/login" className="desktop-nav" style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    padding: '8px 12px',
-                                    background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                                    color: 'white',
-                                    borderRadius: '8px',
-                                    fontWeight: 600,
-                                    fontSize: '13px',
-                                    textDecoration: 'none'
-                                }}>
-                                    <User size={16} /> Sign In
-                                </Link>
-                            )}
+                            {/* User - Hidden on mobile, show via hamburger menu */}
+                            <div className="hide-mobile">
+                                {mounted && user ? (
+                                    <Link href="/profile" style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        borderRadius: '50%',
+                                        background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        overflow: 'hidden',
+                                        textDecoration: 'none',
+                                        border: '2px solid #c7d2fe'
+                                    }}>
+                                        {user.avatar ? (
+                                            <img
+                                                src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`}
+                                                alt=""
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '13px' }}>
+                                                {user.name?.charAt(0).toUpperCase()}
+                                            </span>
+                                        )}
+                                    </Link>
+                                ) : mounted && (
+                                    <Link href="/login" style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        padding: '8px 14px',
+                                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                        color: 'white',
+                                        borderRadius: '8px',
+                                        fontWeight: 600,
+                                        fontSize: '13px',
+                                        textDecoration: 'none'
+                                    }}>
+                                        <User size={16} /> Sign In
+                                    </Link>
+                                )}
+                            </div>
 
                             {/* Mobile Menu Button */}
                             <button
