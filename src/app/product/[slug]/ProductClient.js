@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, ChevronRight, Truck, Shield, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, ChevronRight, Truck, Shield, ArrowLeft, Share2, Copy, Facebook, Twitter, Linkedin, Check } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { useAuth } from '../../../context/AuthContext';
 import { api } from '../../../services/api';
@@ -23,6 +23,8 @@ export default function ProductClient({ initialProduct }) {
     const [inWishlist, setInWishlist] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
     const [localQuantity, setLocalQuantity] = useState(1);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     // If server fetch failed, try client fetch
     useEffect(() => {
@@ -92,6 +94,42 @@ export default function ProductClient({ initialProduct }) {
             updateQuantity(product.id, newQty);
         }
     };
+
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const shareText = `Check out this amazing product: ${product?.name} at Infinite Creations!`;
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const shareOptions = [
+        {
+            name: 'WhatsApp',
+            icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.435 5.617 1.435h.005c6.556 0 11.894-5.335 11.897-11.894a11.83 11.83 0 00-3.484-8.412z" /></svg>,
+            link: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+            color: '#25D366'
+        },
+        {
+            name: 'Facebook',
+            icon: <Facebook size={24} color="#1877F2" />,
+            link: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+            color: '#1877F2'
+        },
+        {
+            name: 'Twitter',
+            icon: <Twitter size={24} color="#1DA1F2" />,
+            link: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+            color: '#1DA1F2'
+        },
+        {
+            name: 'LinkedIn',
+            icon: <Linkedin size={24} color="#0077B5" />,
+            link: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+            color: '#0077B5'
+        }
+    ];
 
     if (loading) {
         return (
@@ -226,17 +264,29 @@ export default function ProductClient({ initialProduct }) {
                                 <p style={{ color: '#4f46e5', fontWeight: 500 }}>
                                     {product.category?.name || 'Product'}
                                 </p>
-                                <button
-                                    onClick={toggleWishlist}
-                                    disabled={wishlistLoading}
-                                    style={{
-                                        padding: '10px', borderRadius: '50%', border: 'none',
-                                        background: inWishlist ? '#fce7f3' : '#f3f4f6',
-                                        cursor: 'pointer', transition: 'all 0.2s'
-                                    }}
-                                >
-                                    <Heart size={22} fill={inWishlist ? '#ec4899' : 'none'} color={inWishlist ? '#ec4899' : '#6b7280'} />
-                                </button>
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <button
+                                        onClick={() => setIsShareModalOpen(true)}
+                                        style={{
+                                            padding: '10px', borderRadius: '50%', border: 'none',
+                                            background: '#f3f4f6', cursor: 'pointer', transition: 'all 0.2s'
+                                        }}
+                                        title="Share Product"
+                                    >
+                                        <Share2 size={22} color="#6b7280" />
+                                    </button>
+                                    <button
+                                        onClick={toggleWishlist}
+                                        disabled={wishlistLoading}
+                                        style={{
+                                            padding: '10px', borderRadius: '50%', border: 'none',
+                                            background: inWishlist ? '#fce7f3' : '#f3f4f6',
+                                            cursor: 'pointer', transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <Heart size={22} fill={inWishlist ? '#ec4899' : 'none'} color={inWishlist ? '#ec4899' : '#6b7280'} />
+                                    </button>
+                                </div>
                             </div>
                             <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '16px' }}>
                                 {product.name}
@@ -390,6 +440,103 @@ export default function ProductClient({ initialProduct }) {
                     }
                 `}</style>
             </main>
+
+            {/* Share Modal */}
+            {isShareModalOpen && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1000, padding: '20px', backdropFilter: 'blur(4px)'
+                }} onClick={() => setIsShareModalOpen(false)}>
+                    <div style={{
+                        background: 'white', borderRadius: '24px', width: '100%', maxWidth: '400px',
+                        padding: '32px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+                        animation: 'modalSlideUp 0.3s ease-out'
+                    }} onClick={e => e.stopPropagation()}>
+                        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>Share Product</h2>
+                        <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '24px' }}>Share this with your friends and family!</p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+                            {shareOptions.map(option => (
+                                <a
+                                    key={option.name}
+                                    href={option.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+                                        textDecoration: 'none', color: '#374151'
+                                    }}
+                                >
+                                    <div style={{
+                                        width: '56px', height: '56px', borderRadius: '16px',
+                                        background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        transition: 'transform 0.2s', border: '1px solid #f3f4f6'
+                                    }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+                                        onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                                        {option.icon}
+                                    </div>
+                                    <span style={{ fontSize: '12px', fontWeight: 500 }}>{option.name}</span>
+                                </a>
+                            ))}
+                        </div>
+
+                        <div style={{ position: 'relative' }}>
+                            <p style={{ fontSize: '12px', fontWeight: 600, color: '#9ca3af', marginBottom: '8px', textTransform: 'uppercase' }}>Direct Link</p>
+                            <div style={{
+                                display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px',
+                                background: '#f9fafb', borderRadius: '12px', border: '1px solid #f3f4f6'
+                            }}>
+                                <input
+                                    type="text"
+                                    value={shareUrl}
+                                    readOnly
+                                    style={{
+                                        flex: 1, background: 'none', border: 'none', outline: 'none',
+                                        fontSize: '14px', color: '#6b7280', textOverflow: 'ellipsis'
+                                    }}
+                                />
+                                <button
+                                    onClick={copyToClipboard}
+                                    style={{
+                                        background: copied ? '#059669' : '#111827', color: 'white',
+                                        border: 'none', borderRadius: '8px', padding: '8px',
+                                        cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center'
+                                    }}
+                                >
+                                    {copied ? <Check size={18} /> : <Copy size={18} />}
+                                </button>
+                            </div>
+                            {copied && (
+                                <span style={{
+                                    position: 'absolute', bottom: '-24px', left: '50%', transform: 'translateX(-50%)',
+                                    fontSize: '11px', color: '#059669', fontWeight: 600
+                                }}>
+                                    Copied to clipboard!
+                                </span>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => setIsShareModalOpen(false)}
+                            style={{
+                                width: '100%', marginTop: '32px', padding: '14px',
+                                borderRadius: '12px', border: '1px solid #e5e7eb',
+                                background: 'white', fontWeight: 600, cursor: 'pointer'
+                            }}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <style>{`
+                @keyframes modalSlideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+            `}</style>
             <Footer />
         </>
     );

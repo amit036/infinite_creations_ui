@@ -31,6 +31,7 @@ const fetcher = async (url, options = {}) => {
 };
 
 export const api = {
+    API_URL,
     get: (url) => fetcher(url, { method: 'GET' }),
     post: (url, body) => fetcher(url, { method: 'POST', body: JSON.stringify(body) }),
     patch: (url, body) => fetcher(url, { method: 'PATCH', body: JSON.stringify(body) }),
