@@ -26,8 +26,11 @@ export default function FloatingCart() {
     // Total quantity
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-    // Don't show if cart is empty OR if we are already on checkout/cart page
-    if (cartCount === 0 || pathname === '/checkout' || pathname === '/cart' || pathname.startsWith('/admin')) {
+    // Don't show if:
+    // 1. Cart is empty
+    // 2. We are on checkout, cart, or admin pages
+    // 3. We are on mobile (as requested, show only on desktop)
+    if (cartCount === 0 || pathname === '/checkout' || pathname === '/cart' || pathname.startsWith('/admin') || isMobile) {
         return null;
     }
 

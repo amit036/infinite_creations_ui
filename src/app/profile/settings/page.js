@@ -10,40 +10,75 @@ export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('password');
 
     return (
-        <div>
-            <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', marginBottom: '24px' }}>Settings</h1>
+        <div className="settings-page">
+            <h1>Settings</h1>
 
-            {/* Tabs */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+            <div className="tabs-container">
                 {[
                     { id: 'password', icon: Lock, label: 'Password' },
                     { id: 'notifications', icon: Bell, label: 'Notifications' },
-                    { id: 'danger', icon: Shield, label: 'Privacy & Security' },
+                    { id: 'danger', icon: Shield, label: 'Privacy' },
                 ].map((tab) => {
                     const Icon = tab.icon;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '8px',
-                                padding: '10px 20px', borderRadius: '8px', border: 'none',
-                                background: activeTab === tab.id ? '#4f46e5' : 'white',
-                                color: activeTab === tab.id ? 'white' : '#374151',
-                                fontWeight: 500, cursor: 'pointer',
-                                boxShadow: activeTab === tab.id ? 'none' : '0 1px 2px rgba(0,0,0,0.05)'
-                            }}
+                            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
                         >
-                            <Icon size={18} /> {tab.label}
+                            <Icon size={16} /> {tab.label}
                         </button>
                     );
                 })}
             </div>
 
-            {/* Content */}
             {activeTab === 'password' && <PasswordSection />}
             {activeTab === 'notifications' && <NotificationsSection />}
             {activeTab === 'danger' && <DangerSection logout={logout} />}
+
+            <style jsx>{`
+                .settings-page { width: 100%; }
+                .settings-page h1 {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #111827;
+                    margin: 0 0 20px;
+                }
+                .tabs-container {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 24px;
+                    overflow-x: auto;
+                    scrollbar-width: none;
+                    padding-bottom: 4px;
+                }
+                .tabs-container::-webkit-scrollbar { display: none; }
+                .tab-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 8px 14px;
+                    border-radius: 8px;
+                    border: none;
+                    background: white;
+                    color: #374151;
+                    font-weight: 500;
+                    font-size: 13px;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+                    flex-shrink: 0;
+                }
+                .tab-btn.active {
+                    background: #4f46e5;
+                    color: white;
+                }
+
+                @media (max-width: 768px) {
+                    .settings-page h1 { font-size: 20px; }
+                    .tab-btn { padding: 6px 12px; font-size: 12px; }
+                }
+            `}</style>
         </div>
     );
 }
@@ -92,81 +127,123 @@ function PasswordSection() {
     };
 
     return (
-        <div style={{
-            background: 'white', borderRadius: '16px', padding: '32px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ padding: '12px', background: '#e0e7ff', borderRadius: '12px' }}>
-                    <Lock size={24} color="#4f46e5" />
-                </div>
+        <div className="section-card">
+            <div className="section-header">
+                <div className="section-icon purple"><Lock size={20} /></div>
                 <div>
-                    <h2 style={{ fontWeight: 600, color: '#111827' }}>Change Password</h2>
-                    <p style={{ fontSize: '14px', color: '#6b7280' }}>Update your password to keep your account secure</p>
+                    <h2>Change Password</h2>
+                    <p>Update your password to keep your account secure</p>
                 </div>
             </div>
 
             {message.text && (
-                <div style={{
-                    padding: '12px 16px', borderRadius: '8px', marginBottom: '24px',
-                    background: message.type === 'success' ? '#d1fae5' : '#fee2e2',
-                    color: message.type === 'success' ? '#059669' : '#dc2626'
-                }}>
-                    {message.text}
-                </div>
+                <div className={`message ${message.type}`}>{message.text}</div>
             )}
 
-            <form onSubmit={handleSubmit} style={{ maxWidth: '400px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {[
-                        { key: 'currentPassword', label: 'Current Password' },
-                        { key: 'newPassword', label: 'New Password' },
-                        { key: 'confirmPassword', label: 'Confirm New Password' },
-                    ].map((field) => (
-                        <div key={field.key}>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, marginBottom: '6px' }}>
-                                {field.label}
-                            </label>
-                            <div style={{ position: 'relative' }}>
-                                <input
-                                    type={showPasswords[field.key.replace('Password', '').replace('confirm', 'confirm')] ? 'text' : 'password'}
-                                    value={formData[field.key]}
-                                    onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
-                                    required
-                                    style={{
-                                        width: '100%', padding: '12px 48px 12px 14px',
-                                        border: '1px solid #d1d5db', borderRadius: '8px', outline: 'none'
-                                    }}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPasswords({ ...showPasswords, [field.key.replace('Password', '').replace('confirm', 'confirm')]: !showPasswords[field.key.replace('Password', '').replace('confirm', 'confirm')] })}
-                                    style={{
-                                        position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-                                        background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280'
-                                    }}
-                                >
-                                    {showPasswords[field.key.replace('Password', '').replace('confirm', 'confirm')] ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </button>
-                            </div>
+            <form onSubmit={handleSubmit} className="form-container">
+                {[
+                    { key: 'currentPassword', label: 'Current Password' },
+                    { key: 'newPassword', label: 'New Password' },
+                    { key: 'confirmPassword', label: 'Confirm New Password' },
+                ].map((field) => (
+                    <div key={field.key} className="field-group">
+                        <label>{field.label}</label>
+                        <div className="input-wrap">
+                            <input
+                                type={showPasswords[field.key] ? 'text' : 'password'}
+                                value={formData[field.key]}
+                                onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPasswords({ ...showPasswords, [field.key]: !showPasswords[field.key] })}
+                                className="toggle-btn"
+                            >
+                                {showPasswords[field.key] ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        marginTop: '24px', padding: '12px 24px',
-                        background: '#4f46e5', color: 'white',
-                        border: 'none', borderRadius: '8px', fontWeight: 600,
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        opacity: loading ? 0.5 : 1
-                    }}
-                >
+                <button type="submit" disabled={loading} className="submit-btn">
                     {loading ? 'Updating...' : 'Update Password'}
                 </button>
             </form>
+
+            <style jsx>{`
+                .section-card {
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    border: 1px solid #e2e8f0;
+                }
+                .section-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 20px;
+                }
+                .section-icon {
+                    padding: 10px;
+                    border-radius: 10px;
+                    display: flex;
+                }
+                .section-icon.purple { background: #e0e7ff; color: #4f46e5; }
+                .section-header h2 { font-size: 16px; font-weight: 600; color: #111827; margin: 0; }
+                .section-header p { font-size: 13px; color: #6b7280; margin: 0; }
+                .message {
+                    padding: 10px 14px;
+                    border-radius: 8px;
+                    margin-bottom: 16px;
+                    font-size: 13px;
+                }
+                .message.success { background: #d1fae5; color: #059669; }
+                .message.error { background: #fee2e2; color: #dc2626; }
+                .form-container { display: flex; flex-direction: column; gap: 16px; }
+                .field-group label {
+                    display: block;
+                    font-size: 13px;
+                    font-weight: 500;
+                    margin-bottom: 6px;
+                }
+                .input-wrap { position: relative; }
+                .input-wrap input {
+                    width: 100%;
+                    padding: 10px 44px 10px 12px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 8px;
+                    outline: none;
+                    font-size: 14px;
+                }
+                .toggle-btn {
+                    position: absolute;
+                    right: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: #6b7280;
+                    padding: 0;
+                }
+                .submit-btn {
+                    padding: 10px 18px;
+                    background: #4f46e5;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    cursor: pointer;
+                    align-self: flex-start;
+                }
+
+                @media (max-width: 768px) {
+                    .section-card { padding: 20px 16px; }
+                    .section-header h2 { font-size: 15px; }
+                }
+            `}</style>
         </div>
     );
 }
@@ -180,112 +257,197 @@ function NotificationsSection() {
     });
 
     return (
-        <div style={{
-            background: 'white', borderRadius: '16px', padding: '32px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ padding: '12px', background: '#fef3c7', borderRadius: '12px' }}>
-                    <Bell size={24} color="#d97706" />
-                </div>
+        <div className="section-card">
+            <div className="section-header">
+                <div className="section-icon yellow"><Bell size={20} /></div>
                 <div>
-                    <h2 style={{ fontWeight: 600, color: '#111827' }}>Notification Preferences</h2>
-                    <p style={{ fontSize: '14px', color: '#6b7280' }}>Choose what notifications you'd like to receive</p>
+                    <h2>Notification Preferences</h2>
+                    <p>Choose what notifications you'd like to receive</p>
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="settings-list">
                 {[
-                    { key: 'orderUpdates', label: 'Order Updates', desc: 'Get notified about your order status changes' },
-                    { key: 'promotions', label: 'Promotions & Deals', desc: 'Receive exclusive offers and discount codes' },
-                    { key: 'newsletter', label: 'Newsletter', desc: 'Weekly updates about new products and features' },
-                    { key: 'productUpdates', label: 'Product Updates', desc: 'Get notified when wishlist items are back in stock' },
+                    { key: 'orderUpdates', label: 'Order Updates', desc: 'Get notified about order status' },
+                    { key: 'promotions', label: 'Promotions', desc: 'Receive offers and discounts' },
+                    { key: 'newsletter', label: 'Newsletter', desc: 'Weekly product updates' },
+                    { key: 'productUpdates', label: 'Product Updates', desc: 'Wishlist item notifications' },
                 ].map((item) => (
-                    <div
-                        key={item.key}
-                        style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            padding: '16px', background: '#f9fafb', borderRadius: '12px'
-                        }}
-                    >
+                    <div key={item.key} className="setting-row">
                         <div>
-                            <p style={{ fontWeight: 500 }}>{item.label}</p>
-                            <p style={{ fontSize: '14px', color: '#6b7280' }}>{item.desc}</p>
+                            <p className="setting-label">{item.label}</p>
+                            <p className="setting-desc">{item.desc}</p>
                         </div>
                         <button
                             onClick={() => setSettings({ ...settings, [item.key]: !settings[item.key] })}
-                            style={{
-                                width: '52px', height: '28px', borderRadius: '14px', border: 'none',
-                                background: settings[item.key] ? '#4f46e5' : '#d1d5db',
-                                cursor: 'pointer', position: 'relative', transition: 'background 0.2s'
-                            }}
+                            className={`toggle ${settings[item.key] ? 'on' : ''}`}
                         >
-                            <div style={{
-                                width: '24px', height: '24px', borderRadius: '50%', background: 'white',
-                                position: 'absolute', top: '2px',
-                                left: settings[item.key] ? '26px' : '2px',
-                                transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                            }} />
+                            <div className="toggle-handle" />
                         </button>
                     </div>
                 ))}
             </div>
+
+            <style jsx>{`
+                .section-card {
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    border: 1px solid #e2e8f0;
+                }
+                .section-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 20px;
+                }
+                .section-icon {
+                    padding: 10px;
+                    border-radius: 10px;
+                    display: flex;
+                }
+                .section-icon.yellow { background: #fef3c7; color: #d97706; }
+                .section-header h2 { font-size: 16px; font-weight: 600; color: #111827; margin: 0; }
+                .section-header p { font-size: 13px; color: #6b7280; margin: 0; }
+                .settings-list { display: flex; flex-direction: column; gap: 12px; }
+                .setting-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 14px;
+                    background: #f9fafb;
+                    border-radius: 10px;
+                    gap: 12px;
+                }
+                .setting-label { font-weight: 500; font-size: 14px; margin: 0; }
+                .setting-desc { font-size: 12px; color: #6b7280; margin: 2px 0 0; }
+                .toggle {
+                    width: 44px;
+                    height: 24px;
+                    border-radius: 12px;
+                    border: none;
+                    background: #d1d5db;
+                    cursor: pointer;
+                    position: relative;
+                    flex-shrink: 0;
+                }
+                .toggle.on { background: #4f46e5; }
+                .toggle-handle {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: white;
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    transition: left 0.2s;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                }
+                .toggle.on .toggle-handle { left: 22px; }
+
+                @media (max-width: 768px) {
+                    .section-card { padding: 20px 16px; }
+                    .section-header h2 { font-size: 15px; }
+                    .setting-row { padding: 12px; }
+                }
+            `}</style>
         </div>
     );
 }
 
 function DangerSection({ logout }) {
     return (
-        <div style={{
-            background: 'white', borderRadius: '16px', padding: '32px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ padding: '12px', background: '#fee2e2', borderRadius: '12px' }}>
-                    <Shield size={24} color="#dc2626" />
-                </div>
+        <div className="section-card">
+            <div className="section-header">
+                <div className="section-icon red"><Shield size={20} /></div>
                 <div>
-                    <h2 style={{ fontWeight: 600, color: '#111827' }}>Privacy & Security</h2>
-                    <p style={{ fontSize: '14px', color: '#6b7280' }}>Manage your account security settings</p>
+                    <h2>Privacy & Security</h2>
+                    <p>Manage your account security</p>
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ padding: '20px', background: '#f9fafb', borderRadius: '12px' }}>
-                    <h3 style={{ fontWeight: 600, marginBottom: '8px' }}>Logout from all devices</h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
-                        This will log you out from all devices where you're currently signed in.
-                    </p>
-                    <button
-                        onClick={() => { logout(); window.location.href = '/'; }}
-                        style={{
-                            padding: '10px 20px', background: '#f3f4f6',
-                            border: '1px solid #d1d5db', borderRadius: '8px',
-                            fontWeight: 500, cursor: 'pointer'
-                        }}
-                    >
+            <div className="danger-list">
+                <div className="danger-item">
+                    <h3>Logout from all devices</h3>
+                    <p>This will log you out from all devices.</p>
+                    <button onClick={() => { logout(); window.location.href = '/'; }} className="logout-btn">
                         Logout Everywhere
                     </button>
                 </div>
 
-                <div style={{ padding: '20px', background: '#fef2f2', borderRadius: '12px', border: '1px solid #fecaca' }}>
-                    <h3 style={{ fontWeight: 600, color: '#dc2626', marginBottom: '8px' }}>Delete Account</h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
-                        Permanently delete your account and all associated data. This action cannot be undone.
-                    </p>
-                    <button
-                        onClick={() => alert('Please contact support to delete your account.')}
-                        style={{
-                            padding: '10px 20px', background: '#dc2626', color: 'white',
-                            border: 'none', borderRadius: '8px',
-                            fontWeight: 500, cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', gap: '8px'
-                        }}
-                    >
-                        <Trash2 size={16} /> Delete Account
+                <div className="danger-item delete">
+                    <h3>Delete Account</h3>
+                    <p>Permanently delete your account. This cannot be undone.</p>
+                    <button onClick={() => alert('Please contact support to delete your account.')} className="delete-btn">
+                        <Trash2 size={14} /> Delete Account
                     </button>
                 </div>
             </div>
+
+            <style jsx>{`
+                .section-card {
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    border: 1px solid #e2e8f0;
+                }
+                .section-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 20px;
+                }
+                .section-icon {
+                    padding: 10px;
+                    border-radius: 10px;
+                    display: flex;
+                }
+                .section-icon.red { background: #fee2e2; color: #dc2626; }
+                .section-header h2 { font-size: 16px; font-weight: 600; color: #111827; margin: 0; }
+                .section-header p { font-size: 13px; color: #6b7280; margin: 0; }
+                .danger-list { display: flex; flex-direction: column; gap: 12px; }
+                .danger-item {
+                    padding: 16px;
+                    background: #f9fafb;
+                    border-radius: 10px;
+                }
+                .danger-item.delete {
+                    background: #fef2f2;
+                    border: 1px solid #fecaca;
+                }
+                .danger-item h3 { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+                .danger-item.delete h3 { color: #dc2626; }
+                .danger-item p { font-size: 12px; color: #6b7280; margin: 0 0 12px; }
+                .logout-btn {
+                    padding: 8px 14px;
+                    background: #f3f4f6;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px;
+                    font-weight: 500;
+                    font-size: 13px;
+                    cursor: pointer;
+                }
+                .delete-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 8px 14px;
+                    background: #dc2626;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    font-weight: 500;
+                    font-size: 13px;
+                    cursor: pointer;
+                }
+
+                @media (max-width: 768px) {
+                    .section-card { padding: 20px 16px; }
+                    .section-header h2 { font-size: 15px; }
+                    .danger-item { padding: 14px; }
+                }
+            `}</style>
         </div>
     );
 }
+

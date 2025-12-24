@@ -47,38 +47,26 @@ export default function ProfileLayout({ children }) {
     return (
         <>
             <Header />
-            <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
-                <div className="page-container" style={{ paddingTop: '32px', paddingBottom: '64px' }}>
-                    <div style={{ display: 'flex', gap: '32px' }}>
-                        {/* Sidebar */}
-                        <aside style={{ width: '280px', flexShrink: 0 }}>
-                            {/* User Card */}
-                            <div style={{
-                                background: 'white', borderRadius: '16px', padding: '24px',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '16px', textAlign: 'center'
-                            }}>
-                                <div style={{
-                                    width: '80px', height: '80px', borderRadius: '50%', margin: '0 auto 16px',
-                                    background: '#e0e7ff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    overflow: 'hidden', border: '3px solid #c7d2fe'
-                                }}>
+            <div className="profile-layout-wrapper">
+                <div className="page-container profile-page-container">
+                    <div className="profile-grid">
+                        {/* Sidebar - Desktop Only */}
+                        <aside className="profile-sidebar">
+                            <div className="sidebar-user-card">
+                                <div className="sidebar-avatar">
                                     {user.avatar ? (
-                                        <img src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`} alt="" />
                                     ) : (
-                                        <span style={{ fontSize: '32px', color: '#4f46e5', fontWeight: 'bold' }}>
-                                            {user.name?.charAt(0).toUpperCase()}
-                                        </span>
+                                        <span>{user.name?.charAt(0).toUpperCase()}</span>
                                     )}
                                 </div>
-                                <h2 style={{ fontWeight: 600, color: '#111827', marginBottom: '4px' }}>{user.name}</h2>
-                                <p style={{ fontSize: '14px', color: '#6b7280' }}>{user.email}</p>
+                                <div className="sidebar-user-info">
+                                    <h4>{user.name}</h4>
+                                    <p>{user.email}</p>
+                                </div>
                             </div>
 
-                            {/* Menu */}
-                            <div style={{
-                                background: 'white', borderRadius: '16px', overflow: 'hidden',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                            }}>
+                            <nav className="sidebar-nav">
                                 {menuItems.map((item) => {
                                     const Icon = item.icon;
                                     const isActive = pathname === item.href;
@@ -86,47 +74,240 @@ export default function ProfileLayout({ children }) {
                                         <Link
                                             key={item.href}
                                             href={item.href}
-                                            style={{
-                                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                padding: '14px 20px', textDecoration: 'none',
-                                                background: isActive ? '#e0e7ff' : 'transparent',
-                                                borderLeft: isActive ? '3px solid #4f46e5' : '3px solid transparent',
-                                                transition: 'all 0.15s'
-                                            }}
+                                            className={`sidebar-link ${isActive ? 'active' : ''}`}
                                         >
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                <Icon size={20} color={isActive ? '#4f46e5' : '#6b7280'} />
-                                                <span style={{ fontWeight: isActive ? 600 : 500, color: isActive ? '#4f46e5' : '#374151' }}>
-                                                    {item.label}
-                                                </span>
-                                            </div>
-                                            <ChevronRight size={18} color="#9ca3af" />
+                                            <Icon size={18} />
+                                            <span>{item.label}</span>
+                                            <ChevronRight size={16} className="chevron" />
                                         </Link>
                                     );
                                 })}
                                 <button
+                                    className="sidebar-logout"
                                     onClick={() => { logout(); router.push('/'); }}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: '12px',
-                                        padding: '14px 20px', width: '100%', textAlign: 'left',
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        borderTop: '1px solid #e5e7eb', color: '#dc2626'
-                                    }}
                                 >
-                                    <LogOut size={20} />
-                                    <span style={{ fontWeight: 500 }}>Logout</span>
+                                    <LogOut size={18} />
+                                    <span>Logout</span>
                                 </button>
-                            </div>
+                            </nav>
                         </aside>
 
+                        {/* Mobile Navigation */}
+                        <nav className="mobile-nav">
+                            {menuItems.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.href;
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`mobile-nav-pill ${isActive ? 'active' : ''}`}
+                                    >
+                                        <Icon size={16} />
+                                        <span>{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </nav>
+
                         {/* Main Content */}
-                        <main style={{ flex: 1, minWidth: 0 }}>
+                        <main className="profile-content">
                             {children}
                         </main>
                     </div>
                 </div>
             </div>
             <Footer />
+
+            <style jsx global>{`
+                .profile-layout-wrapper {
+                    min-height: 100vh;
+                    background: #f8fafc;
+                }
+
+                .profile-page-container {
+                    padding-top: 40px;
+                    padding-bottom: 80px;
+                }
+
+                .profile-grid {
+                    display: grid;
+                    grid-template-columns: 260px 1fr;
+                    gap: 32px;
+                    align-items: start;
+                }
+
+                /* Sidebar */
+                .profile-sidebar {
+                    position: sticky;
+                    top: 100px;
+                }
+
+                .sidebar-user-card {
+                    background: white;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 16px;
+                    padding: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    margin-bottom: 16px;
+                }
+
+                .sidebar-avatar {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 14px;
+                    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                    flex-shrink: 0;
+                }
+                .sidebar-avatar img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .sidebar-avatar span {
+                    color: white;
+                    font-size: 20px;
+                    font-weight: 700;
+                }
+
+                .sidebar-user-info h4 {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: #0f172a;
+                    margin: 0 0 2px;
+                }
+                .sidebar-user-info p {
+                    font-size: 13px;
+                    color: #64748b;
+                    margin: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    max-width: 150px;
+                }
+
+                .sidebar-nav {
+                    background: white;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 16px;
+                    overflow: hidden;
+                }
+
+                .sidebar-link {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 14px 18px;
+                    text-decoration: none;
+                    color: #64748b;
+                    font-weight: 500;
+                    font-size: 14px;
+                    border-bottom: 1px solid #f1f5f9;
+                    transition: all 0.15s;
+                }
+                .sidebar-link:last-of-type { border-bottom: none; }
+                .sidebar-link:hover { background: #f8fafc; color: #4f46e5; }
+                .sidebar-link.active {
+                    background: #f5f3ff;
+                    color: #4f46e5;
+                    font-weight: 600;
+                }
+                .sidebar-link .chevron {
+                    margin-left: auto;
+                    opacity: 0.4;
+                }
+
+                .sidebar-logout {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 14px 18px;
+                    width: 100%;
+                    background: none;
+                    border: none;
+                    border-top: 1px solid #f1f5f9;
+                    color: #ef4444;
+                    font-weight: 600;
+                    font-size: 14px;
+                    cursor: pointer;
+                }
+
+                /* Mobile Nav - Hidden on Desktop */
+                .mobile-nav {
+                    display: none;
+                }
+
+                /* Profile Content */
+                .profile-content {
+                    background: white;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 20px;
+                    padding: 32px;
+                    min-height: 400px;
+                }
+
+                /* ========== MOBILE STYLES ========== */
+                @media (max-width: 900px) {
+                    .profile-page-container {
+                        padding-top: 0;
+                        padding-bottom: 40px;
+                    }
+
+                    .profile-grid {
+                        display: block;
+                    }
+
+                    .profile-sidebar {
+                        display: none;
+                    }
+
+                    .mobile-nav {
+                        display: flex;
+                        gap: 8px;
+                        padding: 12px 0;
+                        overflow-x: auto;
+                        scrollbar-width: none;
+                        margin-bottom: 20px;
+                        border-bottom: 1px solid #e2e8f0;
+                    }
+                    .mobile-nav::-webkit-scrollbar { display: none; }
+
+                    .mobile-nav-pill {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        padding: 10px 16px;
+                        background: white;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 50px;
+                        text-decoration: none;
+                        color: #64748b;
+                        font-weight: 600;
+                        font-size: 13px;
+                        white-space: nowrap;
+                        flex-shrink: 0;
+                    }
+                    .mobile-nav-pill.active {
+                        background: #0f172a;
+                        color: white;
+                        border-color: #0f172a;
+                    }
+
+                    .profile-content {
+                        border: none;
+                        border-radius: 0;
+                        padding: 0;
+                        background: transparent;
+                    }
+                }
+            `}</style>
         </>
     );
 }
+

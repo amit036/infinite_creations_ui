@@ -52,123 +52,61 @@ export default function AddressesPage() {
     };
 
     return (
-        <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div className="addresses-page">
+            <div className="page-header">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>My Addresses</h1>
-                    <p style={{ color: '#6b7280', marginTop: '4px' }}>{addresses.length} saved addresses</p>
+                    <h1>My Addresses</h1>
+                    <p>{addresses.length} saved addresses</p>
                 </div>
                 <button
                     onClick={() => { setEditAddress(null); setShowModal(true); }}
-                    style={{
-                        display: 'flex', alignItems: 'center', gap: '8px',
-                        padding: '12px 20px', background: '#4f46e5', color: 'white',
-                        border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer'
-                    }}
+                    className="add-btn"
                 >
-                    <Plus size={20} /> Add Address
+                    <Plus size={18} /> Add Address
                 </button>
             </div>
 
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '64px' }}>
-                    <div style={{ width: '40px', height: '40px', border: '3px solid #e5e7eb', borderTopColor: '#4f46e5', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                <div className="loading-container">
+                    <div className="spinner"></div>
                 </div>
             ) : addresses.length === 0 ? (
-                <div style={{
-                    background: 'white', borderRadius: '16px', padding: '64px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center'
-                }}>
-                    <div style={{
-                        width: '80px', height: '80px', margin: '0 auto 24px',
-                        background: '#f3f4f6', borderRadius: '50%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}>
+                <div className="empty-state">
+                    <div className="empty-icon">
                         <MapPin size={32} color="#9ca3af" />
                     </div>
-                    <h3 style={{ fontWeight: 600, marginBottom: '8px' }}>No addresses yet</h3>
-                    <p style={{ color: '#6b7280', marginBottom: '24px' }}>Add your first address for faster checkout</p>
-                    <button
-                        onClick={() => setShowModal(true)}
-                        style={{
-                            padding: '12px 24px', background: '#4f46e5', color: 'white',
-                            border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer'
-                        }}
-                    >
+                    <h3>No addresses yet</h3>
+                    <p>Add your first address for faster checkout</p>
+                    <button onClick={() => setShowModal(true)} className="add-btn">
                         Add Address
                     </button>
                 </div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                <div className="address-grid">
                     {addresses.map((addr) => (
-                        <div
-                            key={addr.id}
-                            style={{
-                                background: 'white', borderRadius: '12px', padding: '20px',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)', position: 'relative',
-                                border: addr.isDefault ? '2px solid #4f46e5' : '2px solid transparent'
-                            }}
-                        >
-                            {addr.isDefault && (
-                                <span style={{
-                                    position: 'absolute', top: '-10px', right: '12px',
-                                    background: '#4f46e5', color: 'white', padding: '4px 12px',
-                                    borderRadius: '12px', fontSize: '12px', fontWeight: 600
-                                }}>
-                                    Default
-                                </span>
-                            )}
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                <div style={{
-                                    padding: '6px', background: '#e0e7ff', borderRadius: '6px',
-                                    color: '#4f46e5'
-                                }}>
-                                    {getLabelIcon(addr.label)}
-                                </div>
-                                <span style={{ fontWeight: 600, color: '#111827' }}>{addr.label}</span>
+                        <div key={addr.id} className={`address-card ${addr.isDefault ? 'default' : ''}`}>
+                            {addr.isDefault && <span className="default-badge">Default</span>}
+                            <div className="label-row">
+                                <div className="label-icon">{getLabelIcon(addr.label)}</div>
+                                <span className="label-text">{addr.label}</span>
                             </div>
-
-                            <p style={{ fontWeight: 500, marginBottom: '4px' }}>{addr.name}</p>
-                            <p style={{ color: '#6b7280', fontSize: '14px', lineHeight: 1.5 }}>
+                            <p className="name">{addr.name}</p>
+                            <p className="address-text">
                                 {addr.address}<br />
                                 {addr.city}, {addr.state} {addr.zip}<br />
                                 {addr.country}
                             </p>
-                            <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '8px' }}>📞 {addr.phone}</p>
-
-                            <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                                <button
-                                    onClick={() => { setEditAddress(addr); setShowModal(true); }}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                        padding: '6px 12px', border: '1px solid #d1d5db', borderRadius: '6px',
-                                        background: 'white', cursor: 'pointer', fontSize: '13px'
-                                    }}
-                                >
+                            <p className="phone">📞 {addr.phone}</p>
+                            <div className="actions">
+                                <button onClick={() => { setEditAddress(addr); setShowModal(true); }} className="action-btn">
                                     <Edit2 size={14} /> Edit
                                 </button>
                                 {!addr.isDefault && (
-                                    <button
-                                        onClick={() => handleSetDefault(addr.id)}
-                                        style={{
-                                            display: 'flex', alignItems: 'center', gap: '4px',
-                                            padding: '6px 12px', border: '1px solid #d1d5db', borderRadius: '6px',
-                                            background: 'white', cursor: 'pointer', fontSize: '13px'
-                                        }}
-                                    >
+                                    <button onClick={() => handleSetDefault(addr.id)} className="action-btn">
                                         <Check size={14} /> Set Default
                                     </button>
                                 )}
-                                <button
-                                    onClick={() => handleDelete(addr.id)}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                        padding: '6px 12px', border: '1px solid #fecaca', borderRadius: '6px',
-                                        background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontSize: '13px'
-                                    }}
-                                >
+                                <button onClick={() => handleDelete(addr.id)} className="action-btn delete">
                                     <Trash2 size={14} /> Delete
                                 </button>
                             </div>
@@ -177,7 +115,6 @@ export default function AddressesPage() {
                 </div>
             )}
 
-            {/* Modal */}
             {showModal && (
                 <AddressModal
                     address={editAddress}
@@ -185,6 +122,143 @@ export default function AddressesPage() {
                     onSave={() => { setShowModal(false); loadAddresses(); }}
                 />
             )}
+
+            <style jsx>{`
+                .addresses-page { width: 100%; }
+                .page-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 24px;
+                    gap: 16px;
+                }
+                .page-header h1 { font-size: 24px; font-weight: 700; color: #111827; margin: 0; }
+                .page-header p { color: #6b7280; margin: 4px 0 0; font-size: 14px; }
+                .add-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 10px 16px;
+                    background: #4f46e5;
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    cursor: pointer;
+                    white-space: nowrap;
+                }
+                .loading-container {
+                    display: flex;
+                    justify-content: center;
+                    padding: 64px;
+                }
+                .spinner {
+                    width: 36px;
+                    height: 36px;
+                    border: 3px solid #e5e7eb;
+                    border-top-color: #4f46e5;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .empty-state {
+                    background: white;
+                    border-radius: 16px;
+                    padding: 48px 24px;
+                    text-align: center;
+                    border: 1px solid #e2e8f0;
+                }
+                .empty-icon {
+                    width: 64px;
+                    height: 64px;
+                    margin: 0 auto 20px;
+                    background: #f3f4f6;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .empty-state h3 { font-weight: 600; margin-bottom: 8px; }
+                .empty-state p { color: #6b7280; margin-bottom: 20px; font-size: 14px; }
+                .empty-state .add-btn {
+                    display: inline-flex;
+                    margin: 0 auto;
+                }
+                .address-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 16px;
+                }
+                .address-card {
+                    background: white;
+                    border-radius: 12px;
+                    padding: 16px;
+                    border: 1px solid #e2e8f0;
+                    position: relative;
+                }
+                .address-card.default { border-color: #4f46e5; }
+                .default-badge {
+                    position: absolute;
+                    top: -8px;
+                    right: 12px;
+                    background: #4f46e5;
+                    color: white;
+                    padding: 3px 10px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+                .label-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 10px;
+                }
+                .label-icon {
+                    padding: 5px;
+                    background: #e0e7ff;
+                    border-radius: 6px;
+                    color: #4f46e5;
+                    display: flex;
+                }
+                .label-text { font-weight: 600; color: #111827; font-size: 14px; }
+                .name { font-weight: 500; margin-bottom: 4px; font-size: 14px; }
+                .address-text { color: #6b7280; font-size: 13px; line-height: 1.5; }
+                .phone { color: #6b7280; font-size: 13px; margin-top: 8px; }
+                .actions {
+                    display: flex;
+                    gap: 6px;
+                    margin-top: 12px;
+                    flex-wrap: wrap;
+                }
+                .action-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    padding: 5px 10px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px;
+                    background: white;
+                    cursor: pointer;
+                    font-size: 12px;
+                }
+                .action-btn.delete {
+                    border-color: #fecaca;
+                    background: #fef2f2;
+                    color: #dc2626;
+                }
+
+                @media (max-width: 768px) {
+                    .page-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    .page-header h1 { font-size: 20px; }
+                    .add-btn { padding: 8px 14px; font-size: 13px; }
+                    .address-grid { grid-template-columns: 1fr; }
+                }
+            `}</style>
         </div>
     );
 }

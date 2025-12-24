@@ -76,22 +76,15 @@ export default function ProfileOrdersPage() {
         : orders.filter(o => o.status === filter);
 
     return (
-        <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div className="orders-page">
+            <div className="page-header">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>My Orders</h1>
-                    <p style={{ color: '#6b7280', marginTop: '4px' }}>{orders.length} total orders</p>
+                    <h1>My Orders</h1>
+                    <p>{orders.length} total orders</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Filter size={18} color="#6b7280" />
-                    <select
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        style={{
-                            padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: '8px',
-                            outline: 'none', background: 'white', cursor: 'pointer'
-                        }}
-                    >
+                <div className="filter-row">
+                    <Filter size={16} color="#6b7280" />
+                    <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-select">
                         <option value="all">All Orders</option>
                         <option value="PENDING">Pending</option>
                         <option value="CONFIRMED">Confirmed</option>
@@ -103,175 +96,101 @@ export default function ProfileOrdersPage() {
             </div>
 
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '64px' }}>
-                    <div style={{ width: '40px', height: '40px', border: '3px solid #e5e7eb', borderTopColor: '#4f46e5', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                <div className="loading-container">
+                    <div className="spinner"></div>
                 </div>
             ) : filteredOrders.length === 0 ? (
-                <div style={{
-                    background: 'white', borderRadius: '16px', padding: '64px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center'
-                }}>
-                    <div style={{
-                        width: '80px', height: '80px', margin: '0 auto 24px',
-                        background: '#f3f4f6', borderRadius: '50%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}>
+                <div className="empty-state">
+                    <div className="empty-icon">
                         <ShoppingBag size={32} color="#9ca3af" />
                     </div>
-                    <h3 style={{ fontWeight: 600, marginBottom: '8px' }}>
-                        {filter === 'all' ? 'No orders yet' : `No ${filter.toLowerCase()} orders`}
-                    </h3>
-                    <p style={{ color: '#6b7280', marginBottom: '24px' }}>Start shopping to see your orders here</p>
-                    <Link href="/shop" style={{
-                        padding: '12px 24px', background: '#4f46e5', color: 'white',
-                        borderRadius: '8px', fontWeight: 600, textDecoration: 'none', display: 'inline-block'
-                    }}>
-                        Start Shopping
-                    </Link>
+                    <h3>{filter === 'all' ? 'No orders yet' : `No ${filter.toLowerCase()} orders`}</h3>
+                    <p>Start shopping to see your orders here</p>
+                    <Link href="/shop" className="shop-btn">Start Shopping</Link>
                 </div>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="orders-list">
                     {filteredOrders.map((order) => {
                         const statusStyle = getStatusColor(order.status);
                         return (
-                            <div
-                                key={order.id}
-                                style={{
-                                    background: 'white', borderRadius: '12px',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden'
-                                }}
-                            >
-                                {/* Header */}
-                                <div style={{
-                                    padding: '20px 24px', background: '#f9fafb',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                    borderBottom: '1px solid #e5e7eb'
-                                }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                                        <div>
-                                            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Order Number</p>
-                                            <p style={{ fontWeight: 600, color: '#4f46e5' }}>{order.orderNumber}</p>
+                            <div key={order.id} className="order-card">
+                                <div className="order-header">
+                                    <div className="order-meta">
+                                        <div className="meta-item">
+                                            <span className="meta-label">Order Number</span>
+                                            <span className="meta-value order-num">{order.orderNumber}</span>
                                         </div>
-                                        <div>
-                                            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Date</p>
-                                            <p style={{ fontWeight: 500 }}>
+                                        <div className="meta-item">
+                                            <span className="meta-label">Date</span>
+                                            <span className="meta-value">
                                                 {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </p>
+                                            </span>
                                         </div>
-                                        <div>
-                                            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Total</p>
-                                            <p style={{ fontWeight: 600 }}>{formatPrice(order.totalAmount)}</p>
+                                        <div className="meta-item">
+                                            <span className="meta-label">Total</span>
+                                            <span className="meta-value">{formatPrice(order.totalAmount)}</span>
                                         </div>
                                     </div>
-                                    <span style={{
-                                        padding: '6px 16px', borderRadius: '20px', fontWeight: 500, fontSize: '13px',
-                                        background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`
-                                    }}>
+                                    <span className="status-badge" style={{ background: statusStyle.bg, color: statusStyle.text, borderColor: statusStyle.border }}>
                                         {order.status}
                                     </span>
                                 </div>
 
-                                {/* Items */}
-                                <div style={{ padding: '20px 24px' }}>
-                                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                                        {order.items?.slice(0, 4).map((item) => (
-                                            <div key={item.id} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                                <div style={{
-                                                    width: '56px', height: '56px', borderRadius: '8px',
-                                                    background: '#f3f4f6', overflow: 'hidden', flexShrink: 0
-                                                }}>
+                                <div className="order-items">
+                                    <div className="items-row">
+                                        {order.items?.slice(0, 3).map((item) => (
+                                            <div key={item.id} className="item-preview">
+                                                <div className="item-img">
                                                     {item.product?.images?.[0] ? (
-                                                        <img
-                                                            src={getImageUrl(item.product.images[0])}
-                                                            alt=""
-                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                        />
+                                                        <img src={getImageUrl(item.product.images[0])} alt="" />
                                                     ) : (
-                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>📦</div>
+                                                        <span>📦</span>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p style={{ fontWeight: 500, fontSize: '14px' }}>{item.product?.name}</p>
-                                                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Qty: {item.quantity}</p>
+                                                <div className="item-info">
+                                                    <p className="item-name">{item.product?.name}</p>
+                                                    <p className="item-qty">Qty: {item.quantity}</p>
                                                 </div>
                                             </div>
                                         ))}
-                                        {order.items?.length > 4 && (
-                                            <div style={{
-                                                width: '56px', height: '56px', borderRadius: '8px',
-                                                background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                color: '#6b7280', fontWeight: 600, fontSize: '14px'
-                                            }}>
-                                                +{order.items.length - 4}
-                                            </div>
+                                        {order.items?.length > 3 && (
+                                            <div className="more-items">+{order.items.length - 3}</div>
                                         )}
                                     </div>
 
                                     {order.couponCode && (
-                                        <div style={{ marginTop: '16px', padding: '10px 16px', background: '#d1fae5', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{ color: '#059669', fontWeight: 500, fontSize: '14px' }}>
-                                                Coupon: {order.couponCode} (saved {formatPrice(order.discount)})
-                                            </span>
+                                        <div className="coupon-badge">
+                                            Coupon: {order.couponCode} (saved {formatPrice(order.discount)})
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Footer */}
-                                <div style={{
-                                    padding: '16px 24px', borderTop: '1px solid #e5e7eb',
-                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                    flexWrap: 'wrap', gap: '12px'
-                                }}>
-                                    <div style={{ fontSize: '14px', color: '#6b7280' }}>
-                                        Shipping to: {order.shippingCity}, {order.shippingState}
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                        {/* Track Order button for active orders */}
+                                <div className="order-footer">
+                                    <span className="shipping-info">Shipping to: {order.shippingCity}, {order.shippingState}</span>
+                                    <div className="action-btns">
                                         {['CONFIRMED', 'SHIPPED', 'OUT_OF_DELIVERY'].includes(order.status) && (
                                             <Link
                                                 href={order.trackingToken ? `/track/${order.trackingToken}` : `/track/${order.orderNumber}`}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                                    padding: '8px 16px', background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                                                    borderRadius: '8px', border: 'none',
-                                                    color: 'white', fontWeight: 500, fontSize: '14px',
-                                                    textDecoration: 'none'
-                                                }}
+                                                className="track-btn"
                                             >
-                                                <MapPin size={16} /> Track Order
+                                                <MapPin size={14} /> Track
                                             </Link>
                                         )}
-                                        {/* Only show Invoice for non-cancelled orders */}
                                         {order.status !== 'CANCELLED' && order.paymentStatus !== 'FAILED' && (
                                             <button
                                                 onClick={() => downloadInvoice(order.id, order.orderNumber)}
                                                 disabled={downloadingId === order.id}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                                    padding: '8px 16px', background: downloadingId === order.id ? '#9ca3af' : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                                                    borderRadius: '8px', border: 'none',
-                                                    color: 'white', fontWeight: 500, fontSize: '14px',
-                                                    cursor: downloadingId === order.id ? 'wait' : 'pointer',
-                                                    opacity: downloadingId === order.id ? 0.7 : 1
-                                                }}
+                                                className="invoice-btn"
                                             >
                                                 {downloadingId === order.id ? (
-                                                    <><Loader2 size={16} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} /> Downloading...</>
+                                                    <><Loader2 size={14} className="spin" /> ...</>
                                                 ) : (
-                                                    <><Download size={16} /> Invoice</>
+                                                    <><Download size={14} /> Invoice</>
                                                 )}
                                             </button>
                                         )}
-                                        <Link
-                                            href={`/order-confirmation/${order.id}`}
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '6px',
-                                                padding: '8px 16px', background: '#f3f4f6', borderRadius: '8px',
-                                                color: '#374151', textDecoration: 'none', fontWeight: 500, fontSize: '14px'
-                                            }}
-                                        >
-                                            <Eye size={16} /> Details
+                                        <Link href={`/order-confirmation/${order.id}`} className="details-btn">
+                                            <Eye size={14} /> Details
                                         </Link>
                                     </div>
                                 </div>
@@ -280,6 +199,174 @@ export default function ProfileOrdersPage() {
                     })}
                 </div>
             )}
+
+            <style jsx>{`
+                .orders-page { width: 100%; }
+                .page-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 24px;
+                    gap: 16px;
+                    flex-wrap: wrap;
+                }
+                .page-header h1 { font-size: 24px; font-weight: 700; color: #111827; margin: 0; }
+                .page-header p { color: #6b7280; margin: 4px 0 0; font-size: 14px; }
+                .filter-row { display: flex; align-items: center; gap: 8px; }
+                .filter-select {
+                    padding: 8px 12px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 8px;
+                    outline: none;
+                    background: white;
+                    font-size: 13px;
+                }
+                .loading-container { display: flex; justify-content: center; padding: 64px; }
+                .spinner {
+                    width: 36px;
+                    height: 36px;
+                    border: 3px solid #e5e7eb;
+                    border-top-color: #4f46e5;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .empty-state {
+                    background: white;
+                    border-radius: 16px;
+                    padding: 48px 24px;
+                    text-align: center;
+                    border: 1px solid #e2e8f0;
+                }
+                .empty-icon {
+                    width: 64px;
+                    height: 64px;
+                    margin: 0 auto 20px;
+                    background: #f3f4f6;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .empty-state h3 { font-weight: 600; margin-bottom: 8px; }
+                .empty-state p { color: #6b7280; margin-bottom: 20px; font-size: 14px; }
+                .shop-btn {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background: #4f46e5;
+                    color: white;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    text-decoration: none;
+                    font-size: 14px;
+                }
+                .orders-list { display: flex; flex-direction: column; gap: 16px; }
+                .order-card {
+                    background: white;
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                    overflow: hidden;
+                }
+                .order-header {
+                    padding: 16px;
+                    background: #f9fafb;
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #e5e7eb;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                }
+                .order-meta { display: flex; gap: 20px; flex-wrap: wrap; }
+                .meta-item { display: flex; flex-direction: column; }
+                .meta-label { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
+                .meta-value { font-weight: 500; font-size: 13px; }
+                .order-num { color: #4f46e5; font-weight: 600; word-break: break-all; }
+                .status-badge {
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-weight: 500;
+                    font-size: 11px;
+                    border: 1px solid;
+                    white-space: nowrap;
+                }
+                .order-items { padding: 16px; }
+                .items-row { display: flex; gap: 12px; flex-wrap: wrap; }
+                .item-preview { display: flex; gap: 10px; align-items: center; }
+                .item-img {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 8px;
+                    background: #f3f4f6;
+                    overflow: hidden;
+                    flex-shrink: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .item-img img { width: 100%; height: 100%; object-fit: cover; }
+                .item-name { font-weight: 500; font-size: 13px; margin: 0; }
+                .item-qty { font-size: 11px; color: #6b7280; margin: 2px 0 0; }
+                .more-items {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 8px;
+                    background: #f3f4f6;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #6b7280;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                .coupon-badge {
+                    display: inline-block;
+                    margin-top: 12px;
+                    padding: 8px 12px;
+                    background: #d1fae5;
+                    border-radius: 6px;
+                    color: #059669;
+                    font-weight: 500;
+                    font-size: 12px;
+                }
+                .order-footer {
+                    padding: 12px 16px;
+                    border-top: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .shipping-info { font-size: 12px; color: #6b7280; }
+                .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+                .track-btn, .invoice-btn, .details-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    font-weight: 500;
+                    font-size: 12px;
+                    text-decoration: none;
+                    border: none;
+                    cursor: pointer;
+                }
+                .track-btn { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+                .invoice-btn { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; }
+                .details-btn { background: #f3f4f6; color: #374151; }
+
+                @media (max-width: 768px) {
+                    .page-header { flex-direction: column; align-items: flex-start; }
+                    .page-header h1 { font-size: 20px; }
+                    .order-header { flex-direction: column; }
+                    .order-meta { gap: 12px; }
+                    .status-badge { align-self: flex-start; }
+                    .order-footer { flex-direction: column; align-items: flex-start; }
+                    .action-btns { width: 100%; }
+                }
+            `}</style>
         </div>
     );
 }
+
