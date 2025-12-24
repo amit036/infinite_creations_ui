@@ -28,6 +28,7 @@ export default function CheckoutPage() {
     const [error, setError] = useState('');
     const [razorpayReady, setRazorpayReady] = useState(false);
     const [razorpayKey, setRazorpayKey] = useState('');
+    const [siteSettings, setSiteSettings] = useState(null);
 
     // Payment method: razorpay, phonepe, paypal, cod
     const [paymentMethod, setPaymentMethod] = useState('razorpay');
@@ -43,6 +44,8 @@ export default function CheckoutPage() {
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [couponLoading, setCouponLoading] = useState(false);
     const [couponError, setCouponError] = useState('');
+    const [availableCoupons, setAvailableCoupons] = useState([]);
+    const [loadingCoupons, setLoadingCoupons] = useState(false);
 
     // Shipping form
     const [shipping, setShipping] = useState({
@@ -61,6 +64,7 @@ export default function CheckoutPage() {
         if (user) {
             setShipping(s => ({ ...s, name: user.name || '' }));
             loadSavedAddresses();
+            fetchAvailableCoupons();
         }
     }, [user]);
 
@@ -72,9 +76,24 @@ export default function CheckoutPage() {
 
     async function fetchPaymentConfig() {
         try {
-            const config = await api.get('/payments/config');
+            const [config, settings] = await Promise.all([
+                api.get('/payments/config'),
+                api.get('/settings')
+            ]);
+
             if (config.razorpay?.key) {
                 setRazorpayKey(config.razorpay.key);
+            }
+
+            setSiteSettings(settings);
+
+            // Set default payment method based on enabled options
+            if (settings.paymentMethods) {
+                const methods = settings.paymentMethods;
+                if (methods.razorpay) setPaymentMethod('razorpay');
+                else if (methods.phonepe) setPaymentMethod('phonepe');
+                else if (methods.paypal) setPaymentMethod('paypal');
+                else if (methods.cod) setPaymentMethod('cod');
             }
         } catch (err) {
             console.error('Failed to fetch payment config:', err);
@@ -98,6 +117,25 @@ export default function CheckoutPage() {
             setUseNewAddress(true);
         } finally {
             setLoadingAddresses(false);
+        }
+    }
+
+    async function fetchAvailableCoupons() {
+        setLoadingCoupons(true);
+        try {
+            // Get all coupons - the backend will filter them or we can filter active ones
+            // Actually, we need a public endpoint for 'available' coupons or we can use the admin one if the user has permission?
+            // No, we should probably have a public endpoint. Let's check routes/coupons.js again.
+            // It has router.get('/', auth, adminOnly, async ...) so we can't use it.
+            // I should create a public endpoint or just fetch it here if I can.
+            // For now, let's assume there's a public 'list' or we'll just show the one from the promo bar.
+            // Wait, I can add a public endpoint to list active coupons.
+            const res = await api.get('/coupons/available');
+            setAvailableCoupons(res || []);
+        } catch (err) {
+            console.error('Failed to fetch coupons:', err);
+        } finally {
+            setLoadingCoupons(false);
         }
     }
 
@@ -370,7 +408,9 @@ export default function CheckoutPage() {
 
     const subtotal = total;
     const discount = appliedCoupon ? Number(appliedCoupon.discount) : 0;
-    const shipping_cost = subtotal >= 2000 ? 0 : 99;
+    const freeShippingThreshold = siteSettings?.freeShippingThreshold ?? 2000;
+    const defaultShippingCost = siteSettings?.defaultShippingCost ?? 99;
+    const shipping_cost = subtotal >= freeShippingThreshold ? 0 : defaultShippingCost;
     const finalTotal = subtotal - discount + shipping_cost;
 
     if (!mounted) return null;
@@ -546,95 +586,103 @@ export default function CheckoutPage() {
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     {/* Razorpay */}
-                                    <label style={{
-                                        display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
-                                        border: paymentMethod === 'razorpay' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
-                                        borderRadius: '12px', cursor: 'pointer',
-                                        background: paymentMethod === 'razorpay' ? '#f5f3ff' : 'white'
-                                    }}>
-                                        <input type="radio" name="paymentMethod" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} />
-                                        <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
-                                            <img src={razorpayIcon.src} alt="Razorpay" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <p style={{ fontWeight: 600 }}>Razorpay</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>Cards, UPI, Wallets, Net Banking</p>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '4px' }}>
-                                            <img src="https://cdn.razorpay.com/static/assets/pay_methods_branding/rounded.svg" alt="Payment methods" style={{ height: '24px' }} onError={(e) => e.target.style.display = 'none'} />
-                                        </div>
-                                    </label>
+                                    {(siteSettings?.paymentMethods?.razorpay ?? true) && (
+                                        <label style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
+                                            border: paymentMethod === 'razorpay' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
+                                            borderRadius: '12px', cursor: 'pointer',
+                                            background: paymentMethod === 'razorpay' ? '#f5f3ff' : 'white'
+                                        }}>
+                                            <input type="radio" name="paymentMethod" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} />
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
+                                                <img src={razorpayIcon.src} alt="Razorpay" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <p style={{ fontWeight: 600 }}>Razorpay</p>
+                                                <p style={{ fontSize: '14px', color: '#6b7280' }}>Cards, UPI, Wallets, Net Banking</p>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '4px' }}>
+                                                <img src="https://cdn.razorpay.com/static/assets/pay_methods_branding/rounded.svg" alt="Payment methods" style={{ height: '24px' }} onError={(e) => e.target.style.display = 'none'} />
+                                            </div>
+                                        </label>
+                                    )}
 
                                     {/* PhonePe */}
-                                    <label style={{
-                                        display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
-                                        border: paymentMethod === 'phonepe' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
-                                        borderRadius: '12px', cursor: 'pointer',
-                                        background: paymentMethod === 'phonepe' ? '#f5f3ff' : 'white'
-                                    }}>
-                                        <input type="radio" name="paymentMethod" checked={paymentMethod === 'phonepe'} onChange={() => setPaymentMethod('phonepe')} />
-                                        <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
-                                            <img src={phonepeIcon.src} alt="PhonePe" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <p style={{ fontWeight: 600 }}>PhonePe</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>UPI, Cards, Wallet</p>
-                                        </div>
-                                        <div style={{
-                                            background: '#5f259f',
-                                            color: 'white',
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            fontSize: '11px',
-                                            fontWeight: 600
+                                    {(siteSettings?.paymentMethods?.phonepe ?? true) && (
+                                        <label style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
+                                            border: paymentMethod === 'phonepe' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
+                                            borderRadius: '12px', cursor: 'pointer',
+                                            background: paymentMethod === 'phonepe' ? '#f5f3ff' : 'white'
                                         }}>
-                                            PhonePe
-                                        </div>
-                                    </label>
+                                            <input type="radio" name="paymentMethod" checked={paymentMethod === 'phonepe'} onChange={() => setPaymentMethod('phonepe')} />
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
+                                                <img src={phonepeIcon.src} alt="PhonePe" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <p style={{ fontWeight: 600 }}>PhonePe</p>
+                                                <p style={{ fontSize: '14px', color: '#6b7280' }}>UPI, Cards, Wallet</p>
+                                            </div>
+                                            <div style={{
+                                                background: '#5f259f',
+                                                color: 'white',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                fontSize: '11px',
+                                                fontWeight: 600
+                                            }}>
+                                                PhonePe
+                                            </div>
+                                        </label>
+                                    )}
 
                                     {/* PayPal */}
-                                    <label style={{
-                                        display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
-                                        border: paymentMethod === 'paypal' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
-                                        borderRadius: '12px', cursor: 'pointer',
-                                        background: paymentMethod === 'paypal' ? '#f5f3ff' : 'white'
-                                    }}>
-                                        <input type="radio" name="paymentMethod" checked={paymentMethod === 'paypal'} onChange={() => setPaymentMethod('paypal')} />
-                                        <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
-                                            <img src={paypalIcon.src} alt="PayPal" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <p style={{ fontWeight: 600 }}>PayPal</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>Pay securely with PayPal</p>
-                                        </div>
-                                        <div style={{
-                                            background: '#003087',
-                                            color: 'white',
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            fontSize: '11px',
-                                            fontWeight: 600
+                                    {(siteSettings?.paymentMethods?.paypal ?? true) && (
+                                        <label style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
+                                            border: paymentMethod === 'paypal' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
+                                            borderRadius: '12px', cursor: 'pointer',
+                                            background: paymentMethod === 'paypal' ? '#f5f3ff' : 'white'
                                         }}>
-                                            PayPal
-                                        </div>
-                                    </label>
+                                            <input type="radio" name="paymentMethod" checked={paymentMethod === 'paypal'} onChange={() => setPaymentMethod('paypal')} />
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
+                                                <img src={paypalIcon.src} alt="PayPal" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <p style={{ fontWeight: 600 }}>PayPal</p>
+                                                <p style={{ fontSize: '14px', color: '#6b7280' }}>Pay securely with PayPal</p>
+                                            </div>
+                                            <div style={{
+                                                background: '#003087',
+                                                color: 'white',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                fontSize: '11px',
+                                                fontWeight: 600
+                                            }}>
+                                                PayPal
+                                            </div>
+                                        </label>
+                                    )}
 
                                     {/* Cash on Delivery */}
-                                    <label style={{
-                                        display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
-                                        border: paymentMethod === 'cod' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
-                                        borderRadius: '12px', cursor: 'pointer',
-                                        background: paymentMethod === 'cod' ? '#f5f3ff' : 'white'
-                                    }}>
-                                        <input type="radio" name="paymentMethod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
-                                        <div style={{ width: '40px', height: '40px', background: '#059669', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Banknote size={20} color="white" />
-                                        </div>
-                                        <div>
-                                            <p style={{ fontWeight: 600 }}>Cash on Delivery</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>Pay when your order is delivered</p>
-                                        </div>
-                                    </label>
+                                    {(siteSettings?.paymentMethods?.cod ?? true) && (
+                                        <label style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '16px',
+                                            border: paymentMethod === 'cod' ? '2px solid #4f46e5' : '1px solid #e5e7eb',
+                                            borderRadius: '12px', cursor: 'pointer',
+                                            background: paymentMethod === 'cod' ? '#f5f3ff' : 'white'
+                                        }}>
+                                            <input type="radio" name="paymentMethod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
+                                            <div style={{ width: '40px', height: '40px', background: '#059669', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <Banknote size={20} color="white" />
+                                            </div>
+                                            <div>
+                                                <p style={{ fontWeight: 600 }}>Cash on Delivery</p>
+                                                <p style={{ fontSize: '14px', color: '#6b7280' }}>Pay when your order is delivered</p>
+                                            </div>
+                                        </label>
+                                    )}
                                 </div>
                             </div>
 
@@ -657,15 +705,72 @@ export default function CheckoutPage() {
                                     </div>
                                 ) : (
                                     <div>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value.toUpperCase())} placeholder="Enter coupon code"
-                                                style={{ flex: 1, padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', outline: 'none' }} />
-                                            <button type="button" onClick={handleApplyCoupon} disabled={couponLoading}
-                                                style={{ padding: '12px 24px', background: '#111827', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', opacity: couponLoading ? 0.5 : 1 }}>
+                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                                            <input
+                                                type="text"
+                                                value={couponCode}
+                                                onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                                                placeholder="Enter coupon code"
+                                                style={{ flex: 1, padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', outline: 'none' }}
+                                            />
+                                            <button
+                                                type="button"
+                                                id="apply-coupon-btn"
+                                                onClick={handleApplyCoupon}
+                                                disabled={couponLoading}
+                                                style={{ padding: '12px 24px', background: '#111827', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', opacity: couponLoading ? 0.5 : 1 }}
+                                            >
                                                 {couponLoading ? '...' : 'Apply'}
                                             </button>
                                         </div>
-                                        {couponError && <p style={{ color: '#dc2626', fontSize: '14px', marginTop: '8px' }}>{couponError}</p>}
+                                        {couponError && <p style={{ color: '#dc2626', fontSize: '14px', marginTop: '8px', marginBottom: '16px' }}>{couponError}</p>}
+
+                                        {/* Available Coupons Suggestions */}
+                                        {availableCoupons.length > 0 && (
+                                            <div style={{ marginTop: '20px' }}>
+                                                <p style={{ fontSize: '13px', fontWeight: 600, color: '#6b7280', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Available Coupons</p>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                    {availableCoupons.map(coupon => (
+                                                        <div
+                                                            key={coupon.id}
+                                                            onClick={() => {
+                                                                setCouponCode(coupon.code);
+                                                                // Auto trigger apply
+                                                                setTimeout(() => {
+                                                                    const btn = document.getElementById('apply-coupon-btn');
+                                                                    if (btn) btn.click();
+                                                                }, 0);
+                                                            }}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                                                padding: '12px', border: '1px dashed #d1d5db', borderRadius: '10px',
+                                                                cursor: 'pointer', transition: 'all 0.2s',
+                                                                background: couponCode === coupon.code ? '#f5f3ff' : 'white',
+                                                                borderColor: couponCode === coupon.code ? '#4f46e5' : '#d1d5db'
+                                                            }}
+                                                            onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4f46e5'}
+                                                            onMouseLeave={(e) => {
+                                                                if (couponCode !== coupon.code) e.currentTarget.style.borderColor = '#d1d5db';
+                                                            }}
+                                                        >
+                                                            <div>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <span style={{ fontWeight: 700, color: '#111827', fontSize: '14px' }}>{coupon.code}</span>
+                                                                    {coupon.firstOrderOnly && (
+                                                                        <span style={{ fontSize: '10px', background: '#e0e7ff', color: '#4f46e5', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>1st Order Only</span>
+                                                                    )}
+                                                                </div>
+                                                                <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                                                                    {coupon.discountType === 'percentage' ? `${Number(coupon.discountValue)}% Off` : `₹${Number(coupon.discountValue)} Off`}
+                                                                    {coupon.minOrderValue ? ` • Min order ₹${Number(coupon.minOrderValue)}` : ''}
+                                                                </p>
+                                                            </div>
+                                                            <span style={{ fontSize: '13px', color: '#4f46e5', fontWeight: 600 }}>Apply</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -773,7 +878,7 @@ export default function CheckoutPage() {
                                 </button>
 
                                 <p style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', marginTop: '16px' }}>
-                                    Free shipping on orders over ₹2,000
+                                    Free shipping on orders over {formatPrice(freeShippingThreshold)}
                                 </p>
 
                                 {/* Security badges */}

@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Package, Eye, ChevronDown, Filter } from 'lucide-react';
-import { api } from '../../../services/api';
+import { ShoppingBag, Package, Eye, ChevronDown, Filter, Download, Loader2, MapPin } from 'lucide-react';
+import { api, API_URL } from '../../../services/api';
 import { formatPrice, getImageUrl } from '../../../utils/helpers';
 
 export default function ProfileOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [downloadingId, setDownloadingId] = useState(null);
 
     useEffect(() => {
         loadOrders();
@@ -31,10 +32,43 @@ export default function ProfileOrdersPage() {
             PENDING: { bg: '#fef3c7', text: '#b45309', border: '#fcd34d' },
             CONFIRMED: { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
             SHIPPED: { bg: '#e0e7ff', text: '#4f46e5', border: '#a5b4fc' },
+            OUT_OF_DELIVERY: { bg: '#ffedd5', text: '#ea580c', border: '#fdba74' },
             DELIVERED: { bg: '#d1fae5', text: '#059669', border: '#6ee7b7' },
             CANCELLED: { bg: '#fee2e2', text: '#dc2626', border: '#fca5a5' },
         };
         return colors[status] || { bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db' };
+    };
+
+    const downloadInvoice = async (orderId, orderNumber) => {
+        setDownloadingId(orderId);
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await fetch(`${API_URL}/orders/${orderId}/invoice`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download invoice');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Invoice-${orderNumber}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Error downloading invoice:', error);
+            alert('Failed to download invoice. Please try again.');
+        } finally {
+            setDownloadingId(null);
+        }
     };
 
     const filteredOrders = filter === 'all'
@@ -186,21 +220,60 @@ export default function ProfileOrdersPage() {
                                 {/* Footer */}
                                 <div style={{
                                     padding: '16px 24px', borderTop: '1px solid #e5e7eb',
-                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                    flexWrap: 'wrap', gap: '12px'
                                 }}>
                                     <div style={{ fontSize: '14px', color: '#6b7280' }}>
                                         Shipping to: {order.shippingCity}, {order.shippingState}
                                     </div>
-                                    <Link
-                                        href={`/order-confirmation/${order.id}`}
-                                        style={{
-                                            display: 'flex', alignItems: 'center', gap: '6px',
-                                            padding: '8px 16px', background: '#f3f4f6', borderRadius: '8px',
-                                            color: '#374151', textDecoration: 'none', fontWeight: 500, fontSize: '14px'
-                                        }}
-                                    >
-                                        <Eye size={16} /> View Details
-                                    </Link>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {/* Track Order button for active orders */}
+                                        {['CONFIRMED', 'SHIPPED', 'OUT_OF_DELIVERY'].includes(order.status) && (
+                                            <Link
+                                                href={order.trackingToken ? `/track/${order.trackingToken}` : `/track/${order.orderNumber}`}
+                                                style={{
+                                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                                    padding: '8px 16px', background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                                                    borderRadius: '8px', border: 'none',
+                                                    color: 'white', fontWeight: 500, fontSize: '14px',
+                                                    textDecoration: 'none'
+                                                }}
+                                            >
+                                                <MapPin size={16} /> Track Order
+                                            </Link>
+                                        )}
+                                        {/* Only show Invoice for non-cancelled orders */}
+                                        {order.status !== 'CANCELLED' && order.paymentStatus !== 'FAILED' && (
+                                            <button
+                                                onClick={() => downloadInvoice(order.id, order.orderNumber)}
+                                                disabled={downloadingId === order.id}
+                                                style={{
+                                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                                    padding: '8px 16px', background: downloadingId === order.id ? '#9ca3af' : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                                    borderRadius: '8px', border: 'none',
+                                                    color: 'white', fontWeight: 500, fontSize: '14px',
+                                                    cursor: downloadingId === order.id ? 'wait' : 'pointer',
+                                                    opacity: downloadingId === order.id ? 0.7 : 1
+                                                }}
+                                            >
+                                                {downloadingId === order.id ? (
+                                                    <><Loader2 size={16} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} /> Downloading...</>
+                                                ) : (
+                                                    <><Download size={16} /> Invoice</>
+                                                )}
+                                            </button>
+                                        )}
+                                        <Link
+                                            href={`/order-confirmation/${order.id}`}
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '6px',
+                                                padding: '8px 16px', background: '#f3f4f6', borderRadius: '8px',
+                                                color: '#374151', textDecoration: 'none', fontWeight: 500, fontSize: '14px'
+                                            }}
+                                        >
+                                            <Eye size={16} /> Details
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         );

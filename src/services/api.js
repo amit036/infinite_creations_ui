@@ -1,16 +1,14 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://infinite-creations-backend.onrender.com';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
-export const fetcher = async (url, options = {}) => {
-    // Only run on client side
-    if (typeof window === 'undefined') {
-        return null;
+const fetcher = async (url, options = {}) => {
+    let token = null;
+    if (typeof window !== 'undefined') {
+        token = localStorage.getItem('accessToken');
     }
-
-    const token = localStorage.getItem('accessToken');
 
     const headers = {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
     };
 

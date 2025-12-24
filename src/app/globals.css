@@ -302,7 +302,7 @@ body {
   font-weight: 700;
   font-size: 15px;
   text-decoration: none;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 @media (min-width: 768px) {
@@ -324,7 +324,7 @@ body {
   font-weight: 600;
   font-size: 15px;
   text-decoration: none;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 @media (min-width: 768px) {
@@ -441,7 +441,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 100;
   opacity: 0;
   visibility: hidden;
@@ -659,6 +659,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -674,6 +675,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -732,11 +734,17 @@ body {
 
 /* Touch-friendly tap targets */
 @media (max-width: 768px) {
-  button, a, input, select, textarea {
-    min-height: 44px;
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 36px;
   }
-  
-  input[type="checkbox"], input[type="radio"] {
+
+  input[type="checkbox"],
+  input[type="radio"] {
     min-height: auto;
     width: 20px;
     height: 20px;
@@ -744,7 +752,8 @@ body {
 }
 
 /* Prevent horizontal scroll */
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 

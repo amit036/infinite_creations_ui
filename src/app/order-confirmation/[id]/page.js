@@ -63,16 +63,26 @@ export default function OrderConfirmationPage() {
                     <div style={{ textAlign: 'center', marginBottom: '48px' }}>
                         <div style={{
                             width: '80px', height: '80px', margin: '0 auto 24px',
-                            background: '#d1fae5', borderRadius: '50%',
+                            background: order.status === 'CANCELLED' ? '#fee2e2' : '#d1fae5', borderRadius: '50%',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
-                            <CheckCircle size={40} color="#059669" />
+                            <CheckCircle size={40} color={order.status === 'CANCELLED' ? '#ef4444' : '#059669'} />
                         </div>
                         <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>
-                            Order Confirmed!
+                            {order.status === 'PENDING' && 'Order Placed Successfully!'}
+                            {order.status === 'CONFIRMED' && 'Order Confirmed!'}
+                            {order.status === 'SHIPPED' && 'Order Shipped!'}
+                            {order.status === 'OUT_OF_DELIVERY' && 'Out for Delivery!'}
+                            {order.status === 'DELIVERED' && 'Order Delivered!'}
+                            {order.status === 'CANCELLED' && 'Order Cancelled'}
                         </h1>
                         <p style={{ color: '#6b7280', fontSize: '18px' }}>
-                            Thank you for your purchase. Your order has been received.
+                            {order.status === 'PENDING' && 'Thank you for your purchase. Your order is being reviewed.'}
+                            {order.status === 'CONFIRMED' && 'Your order has been confirmed and will be shipped soon.'}
+                            {order.status === 'SHIPPED' && 'Your order is on its way to you!'}
+                            {order.status === 'OUT_OF_DELIVERY' && 'Your order will be delivered today!'}
+                            {order.status === 'DELIVERED' && 'Your order has been delivered. Thank you for shopping with us!'}
+                            {order.status === 'CANCELLED' && 'This order has been cancelled.'}
                         </p>
                     </div>
 
@@ -126,7 +136,7 @@ export default function OrderConfirmationPage() {
                             </div>
 
                             {/* Shipping Address */}
-                            <div style={{ padding: '20px', background: '#f9fafb', borderRadius: '12px' }}>
+                            <div style={{ padding: '20px', background: '#f9fafb', borderRadius: '12px', marginBottom: '16px' }}>
                                 <h3 style={{ fontWeight: 600, marginBottom: '12px' }}>Shipping Address</h3>
                                 <p style={{ color: '#6b7280' }}>
                                     {order.shippingName}<br />
@@ -134,6 +144,55 @@ export default function OrderConfirmationPage() {
                                     {order.shippingCity}, {order.shippingState} {order.shippingZip}<br />
                                     {order.shippingPhone}
                                 </p>
+                            </div>
+
+                            {/* Payment Info */}
+                            <div style={{ padding: '20px', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                                <h3 style={{ fontWeight: 600, marginBottom: '12px', color: '#166534' }}>Payment Information</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                                    <div>
+                                        <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Payment Method</p>
+                                        <p style={{ fontWeight: 600, color: '#111827' }}>
+                                            {order.paymentMethod || 'N/A'}
+                                            {order.paymentType && <span style={{ fontWeight: 400, color: '#6b7280' }}> ({order.paymentType})</span>}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Payment Status</p>
+                                        <p style={{
+                                            fontWeight: 600,
+                                            color: order.paymentStatus === 'PAID' ? '#059669' :
+                                                order.paymentStatus === 'FAILED' ? '#dc2626' :
+                                                    order.paymentStatus === 'COD_PENDING' ? '#3b82f6' : '#d97706'
+                                        }}>
+                                            {order.paymentStatus || 'PENDING'}
+                                        </p>
+                                    </div>
+                                    {order.paymentId && (
+                                        <div style={{ gridColumn: 'span 2' }}>
+                                            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Transaction ID</p>
+                                            <p style={{ fontWeight: 500, color: '#111827', fontSize: '13px', fontFamily: 'monospace' }}>
+                                                {order.paymentId}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {order.paidAt && (
+                                        <div style={{ gridColumn: 'span 2' }}>
+                                            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>Paid At</p>
+                                            <p style={{ fontWeight: 500, color: '#111827' }}>
+                                                {new Date(order.paidAt).toLocaleString('en-IN')}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {order.failureReason && (
+                                        <div style={{ gridColumn: 'span 2', padding: '10px', background: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca' }}>
+                                            <p style={{ fontSize: '12px', color: '#991b1b', marginBottom: '2px' }}>Failure Reason</p>
+                                            <p style={{ fontWeight: 500, color: '#dc2626' }}>
+                                                {order.failureReason}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

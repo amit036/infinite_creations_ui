@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Truck, Shield, RefreshCw, Star, ChevronRight } from 'lucide-react';
+import { ArrowRight, Truck, Shield, RefreshCw, Star, ChevronRight, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { api } from '../services/api';
 import Header from '../components/Header';
@@ -36,7 +36,10 @@ function ProductCard({ product }) {
       borderRadius: '12px',
       overflow: 'hidden',
       boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%'
     }}>
       <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
         <div style={{
@@ -68,83 +71,117 @@ function ProductCard({ product }) {
           )}
         </div>
       </Link>
-      <div style={{ padding: '12px' }}>
+      <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
         <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           {product.category?.name || 'Product'}
         </p>
         <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
           <h3 style={{ fontWeight: 600, color: '#111827', marginBottom: '8px', fontSize: '14px', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</h3>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#111827' }}>
-              {formatPrice(displayPrice)}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '12px' }}>
+          <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#111827' }}>
+            {formatPrice(displayPrice)}
+          </span>
+          {hasDiscount && (
+            <span style={{ fontSize: '12px', color: '#9ca3af', textDecoration: 'line-through' }}>
+              {formatPrice(product.price)}
             </span>
-            {hasDiscount && (
-              <span style={{ fontSize: '12px', color: '#9ca3af', textDecoration: 'line-through' }}>
-                {formatPrice(product.price)}
-              </span>
-            )}
-          </div>
+          )}
+        </div>
+
+        <div style={{
+          marginTop: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%'
+        }}>
           {product.stock === 0 ? (
             <button
               disabled
               style={{
-                padding: '6px 12px',
+                width: '100%',
+                padding: '10px',
                 background: '#f3f4f6',
                 color: '#9ca3af',
                 border: 'none',
-                borderRadius: '16px',
+                borderRadius: '12px',
                 fontWeight: 600,
-                fontSize: '12px',
+                fontSize: '13px',
                 cursor: 'not-allowed'
               }}
             >
-              Out
+              Out of Stock
             </button>
           ) : quantity > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: '#f3f4f6',
+              borderRadius: '24px',
+              padding: '3px',
+              gap: '4px',
+              width: '100%',
+              justifyContent: 'space-between'
+            }}>
               <button
                 onClick={() => quantity === 1 ? removeFromCart(product.id) : updateQuantity(product.id, quantity - 1)}
                 style={{
-                  width: '28px', height: '28px', borderRadius: '8px',
-                  background: '#f3f4f6', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px'
+                  width: '34px', height: '34px', borderRadius: '50%',
+                  background: 'white', border: '1px solid #e5e7eb', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#4f46e5', flexShrink: 0,
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                 }}
+                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.9)'}
+                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                −
+                <Minus size={16} strokeWidth={3} />
               </button>
-              <span style={{ fontWeight: 600, minWidth: '20px', textAlign: 'center', fontSize: '14px' }}>{quantity}</span>
+              <span style={{ fontWeight: 700, fontSize: '15px', color: '#111827' }}>{quantity}</span>
               <button
                 onClick={() => updateQuantity(product.id, quantity + 1)}
                 disabled={quantity >= product.stock}
                 style={{
-                  width: '28px', height: '28px', borderRadius: '8px',
-                  background: quantity >= product.stock ? '#e5e7eb' : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                  width: '34px', height: '34px', borderRadius: '50%',
+                  background: quantity >= product.stock ? '#f3f4f6' : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                   color: quantity >= product.stock ? '#9ca3af' : 'white',
                   border: 'none', cursor: quantity >= product.stock ? 'not-allowed' : 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                  transition: 'all 0.2s ease',
+                  boxShadow: quantity >= product.stock ? 'none' : '0 4px 10px rgba(79, 70, 229, 0.3)'
                 }}
+                onMouseDown={(e) => { if (quantity < product.stock) e.currentTarget.style.transform = 'scale(0.9)'; }}
+                onMouseUp={(e) => { if (quantity < product.stock) e.currentTarget.style.transform = 'scale(1)'; }}
               >
-                +
+                <Plus size={16} strokeWidth={3} />
               </button>
             </div>
           ) : (
             <button
               onClick={() => addToCart(product)}
               style={{
-                padding: '6px 14px',
+                width: '100%',
+                padding: '12px',
                 background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '16px',
-                fontWeight: 600,
-                fontSize: '12px',
+                borderRadius: '24px',
+                fontWeight: 700,
+                fontSize: '14px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)'
+                boxShadow: '0 6px 16px rgba(79, 70, 229, 0.3)',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
               }}
+              onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
+              onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              Add
+              <ShoppingCart size={18} /> Add to Cart
             </button>
           )}
         </div>
@@ -263,14 +300,13 @@ export default function HomePage() {
 
         {/* Categories */}
         <section className="page-container section-padding">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-            <div>
-              <h2 className="section-title">Shop by Category</h2>
-              <p style={{ color: '#6b7280', marginTop: '4px', fontSize: '14px' }}>Browse our wide selection of products</p>
-            </div>
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <h2 className="section-title">Shop by Category</h2>
+            <p style={{ color: '#6b7280', marginTop: '4px', fontSize: '14px' }}>Browse our wide selection of products</p>
             <Link href="/shop" style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              color: '#4f46e5', fontWeight: 600, textDecoration: 'none', fontSize: '14px'
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              color: '#4f46e5', fontWeight: 600, textDecoration: 'none', fontSize: '14px',
+              marginTop: '12px'
             }}>
               View All <ChevronRight size={18} />
             </Link>
@@ -282,27 +318,32 @@ export default function HomePage() {
                 key={cat.id}
                 href={`/shop?category=${cat.slug}`}
                 style={{
-                  padding: '20px',
+                  padding: '24px 20px',
                   background: 'white',
-                  borderRadius: '12px',
+                  borderRadius: '16px',
                   textDecoration: 'none',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
                   transition: 'all 0.3s',
-                  border: '1px solid #f3f4f6'
+                  border: '1px solid #f3f4f6',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center'
                 }}
               >
                 <div style={{
-                  width: '48px', height: '48px', borderRadius: '10px',
+                  width: '56px', height: '56px', borderRadius: '14px',
                   background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '12px', fontSize: '22px'
+                  marginBottom: '16px', fontSize: '26px',
+                  boxShadow: '0 4px 10px rgba(99, 102, 241, 0.1)'
                 }}>
                   {cat.slug === 'electronics' ? '📱' :
                     cat.slug === 'clothing' ? '👕' :
                       cat.slug === 'home-living' ? '🏠' : '🎒'}
                 </div>
-                <h3 style={{ fontWeight: 600, color: '#111827', marginBottom: '2px', fontSize: '15px' }}>{cat.name}</h3>
-                <p style={{ fontSize: '13px', color: '#6b7280' }}>{cat._count?.products || 0} products</p>
+                <h3 style={{ fontWeight: 700, color: '#111827', marginBottom: '4px', fontSize: '16px' }}>{cat.name}</h3>
+                <p style={{ fontSize: '13px', color: '#6b7280', fontWeight: 500 }}>{cat._count?.products || 0} products</p>
               </Link>
             ))}
           </div>

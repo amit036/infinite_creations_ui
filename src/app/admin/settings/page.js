@@ -18,6 +18,8 @@ export default function SettingsPage() {
         freeShippingThreshold: 2000,
         defaultShippingCost: 99,
         paymentMethods: {
+            razorpay: true,
+            phonepe: true,
             paypal: true,
             cod: true
         }
@@ -273,15 +275,86 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    {/* Razorpay */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '40px', height: '40px', background: '#003087', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: '40px', height: '40px', background: '#072654', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '12px' }}>RZ</span>
+                            </div>
+                            <div>
+                                <p style={{ fontWeight: 500 }}>Razorpay</p>
+                                <p style={{ fontSize: '14px', color: '#6b7280' }}>Cards, UPI, NetBanking</p>
+                            </div>
+                        </div>
+                        <label style={{ position: 'relative', display: 'inline-block', width: '52px', height: '28px' }}>
+                            <input
+                                type="checkbox"
+                                checked={settings.paymentMethods?.razorpay ?? true}
+                                onChange={(e) => setSettings({
+                                    ...settings,
+                                    paymentMethods: { ...settings.paymentMethods, razorpay: e.target.checked }
+                                })}
+                                style={{ opacity: 0, width: 0, height: 0 }}
+                            />
+                            <span style={{
+                                position: 'absolute', cursor: 'pointer', inset: 0,
+                                background: settings.paymentMethods?.razorpay ? '#4f46e5' : '#d1d5db',
+                                borderRadius: '28px', transition: 'background 0.3s'
+                            }}>
+                                <span style={{
+                                    position: 'absolute', height: '20px', width: '20px',
+                                    left: settings.paymentMethods?.razorpay ? '28px' : '4px', bottom: '4px',
+                                    background: 'white', borderRadius: '50%', transition: 'left 0.3s'
+                                }}></span>
+                            </span>
+                        </label>
+                    </div>
+
+                    {/* PhonePe */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '40px', height: '40px', background: '#5f259f', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <span style={{ color: 'white', fontWeight: 'bold', fontSize: '12px' }}>PP</span>
                             </div>
                             <div>
+                                <p style={{ fontWeight: 500 }}>PhonePe</p>
+                                <p style={{ fontSize: '14px', color: '#6b7280' }}>UPI, Cards, Wallet</p>
+                            </div>
+                        </div>
+                        <label style={{ position: 'relative', display: 'inline-block', width: '52px', height: '28px' }}>
+                            <input
+                                type="checkbox"
+                                checked={settings.paymentMethods?.phonepe ?? true}
+                                onChange={(e) => setSettings({
+                                    ...settings,
+                                    paymentMethods: { ...settings.paymentMethods, phonepe: e.target.checked }
+                                })}
+                                style={{ opacity: 0, width: 0, height: 0 }}
+                            />
+                            <span style={{
+                                position: 'absolute', cursor: 'pointer', inset: 0,
+                                background: settings.paymentMethods?.phonepe ? '#4f46e5' : '#d1d5db',
+                                borderRadius: '28px', transition: 'background 0.3s'
+                            }}>
+                                <span style={{
+                                    position: 'absolute', height: '20px', width: '20px',
+                                    left: settings.paymentMethods?.phonepe ? '28px' : '4px', bottom: '4px',
+                                    background: 'white', borderRadius: '50%', transition: 'left 0.3s'
+                                }}></span>
+                            </span>
+                        </label>
+                    </div>
+
+                    {/* PayPal */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '40px', height: '40px', background: '#003087', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '12px' }}>PY</span>
+                            </div>
+                            <div>
                                 <p style={{ fontWeight: 500 }}>PayPal</p>
-                                <p style={{ fontSize: '14px', color: '#6b7280' }}>Accept payments via PayPal</p>
+                                <p style={{ fontSize: '14px', color: '#6b7280' }}>International orders</p>
                             </div>
                         </div>
                         <label style={{ position: 'relative', display: 'inline-block', width: '52px', height: '28px' }}>
@@ -308,6 +381,7 @@ export default function SettingsPage() {
                         </label>
                     </div>
 
+                    {/* Cash on Delivery */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ width: '40px', height: '40px', background: '#059669', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

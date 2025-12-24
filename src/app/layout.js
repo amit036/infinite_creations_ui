@@ -1,4 +1,5 @@
 import { Providers } from './providers';
+import FloatingCart from '../components/FloatingCart';
 import './globals.css';
 
 // SEO Metadata - This is the Next.js 14+ way to handle SEO
@@ -131,6 +132,7 @@ export default function RootLayout({ children }) {
       }} suppressHydrationWarning>
         <Providers>
           {children}
+          <FloatingCart />
         </Providers>
       </body>
     </html>

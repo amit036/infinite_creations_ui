@@ -57,189 +57,199 @@ export default function Header() {
     ];
 
     return (
-        <div style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 50
-        }}>
-            {/* Top Bar - Controlled by Admin */}
-            {promoSettings && promoSettings.promoBarEnabled && (
-                <div style={{
-                    background: promoSettings.promoBarBgColor || '#4f46e5',
-                    color: promoSettings.promoBarTextColor || 'white',
-                    fontSize: '11px',
-                    fontWeight: '500',
-                    height: '28px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '0 8px',
-                    overflow: 'hidden'
-                }}>
-                    <span style={{ textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        🎉 {promoSettings.promoBarMessage.replace(/^🎉\s*/, '')}
-                    </span>
-                </div>
-            )}
-
-            {/* Main Header */}
-            <header style={{
-                background: scrolled ? 'rgba(255,255,255,0.98)' : 'white',
-                backdropFilter: scrolled ? 'blur(12px)' : 'none',
-                borderBottom: '1px solid #e5e7eb',
-                boxShadow: scrolled ? '0 2px 10px rgba(0, 0, 0, 0.06)' : 'none',
-                transition: 'all 0.3s ease',
-                height: '56px',
-                display: 'flex',
-                alignItems: 'center'
+        <>
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000,
+                background: 'white',
+                borderBottom: '1px solid #e5e7eb'
             }}>
-                <div className="page-container" style={{ width: '100%' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        {/* Logo */}
-                        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
-                            <Image
-                                src={logo}
-                                alt="IC"
-                                width={36}
-                                height={36}
-                                style={{ objectFit: 'contain', flexShrink: 0 }}
-                            />
-                            <span style={{
-                                fontSize: '18px',
-                                fontWeight: '700',
-                                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                whiteSpace: 'nowrap'
-                            }}>
-                                Infinite Creations
-                            </span>
-                        </Link>
+                {/* Top Bar - Controlled by Admin */}
+                {promoSettings && promoSettings.promoBarEnabled && (
+                    <div style={{
+                        background: promoSettings.promoBarBgColor || '#4f46e5',
+                        color: promoSettings.promoBarTextColor || 'white',
+                        fontSize: '11px',
+                        fontWeight: '500',
+                        height: '28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 8px',
+                        overflow: 'hidden'
+                    }}>
+                        <span style={{ textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            🎉 {promoSettings.promoBarMessage.replace(/^🎉\s*/, '')}
+                        </span>
+                    </div>
+                )}
 
-                        {/* Desktop Navigation */}
-                        <nav className="desktop-nav">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    style={{
-                                        color: '#374151',
-                                        fontWeight: 500,
-                                        fontSize: '14px',
-                                        textDecoration: 'none',
-                                        padding: '6px 0',
-                                        transition: 'color 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.color = '#4f46e5'}
-                                    onMouseLeave={(e) => e.target.style.color = '#374151'}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </nav>
-
-                        {/* Right Side Icons */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            {/* Cart */}
-                            <Link href="/cart" style={{
-                                position: 'relative',
-                                width: '36px',
-                                height: '36px',
-                                background: '#f3f4f6',
-                                borderRadius: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
-                                <ShoppingCart size={18} color="#374151" />
-                                {mounted && cartCount > 0 && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        top: -4,
-                                        right: -4,
-                                        background: '#4f46e5',
-                                        color: 'white',
-                                        fontSize: '10px',
-                                        fontWeight: 'bold',
-                                        width: '16px',
-                                        height: '16px',
-                                        borderRadius: '50%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: '2px solid white'
-                                    }}>{cartCount}</span>
-                                )}
+                {/* Main Header */}
+                <header style={{
+                    background: scrolled ? 'rgba(255,255,255,0.98)' : 'white',
+                    backdropFilter: scrolled ? 'blur(12px)' : 'none',
+                    // borderBottom: '1px solid #e5e7eb', // Moved to the parent fixed div
+                    boxShadow: scrolled ? '0 2px 10px rgba(0, 0, 0, 0.06)' : 'none',
+                    transition: 'all 0.3s ease',
+                    height: '56px',
+                    display: 'flex',
+                    alignItems: 'center'
+                }}>
+                    <div className="page-container" style={{ width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            {/* Logo */}
+                            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
+                                <Image
+                                    src={logo}
+                                    alt="IC"
+                                    width={36}
+                                    height={36}
+                                    style={{ objectFit: 'contain', flexShrink: 0 }}
+                                />
+                                <span style={{
+                                    fontSize: '18px',
+                                    fontWeight: '700',
+                                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    Infinite Creations
+                                </span>
                             </Link>
 
-                            {/* User - Hidden on mobile, show via hamburger menu */}
-                            <div className="hide-mobile">
-                                {mounted && user ? (
-                                    <Link href="/profile" style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: '50%',
-                                        background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        overflow: 'hidden',
-                                        textDecoration: 'none',
-                                        border: '2px solid #c7d2fe'
-                                    }}>
-                                        {user.avatar ? (
-                                            <img
-                                                src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`}
-                                                alt=""
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '13px' }}>
-                                                {user.name?.charAt(0).toUpperCase()}
-                                            </span>
-                                        )}
+                            {/* Desktop Navigation */}
+                            <nav className="desktop-nav">
+                                {navLinks.map((link) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        style={{
+                                            color: '#374151',
+                                            fontWeight: 500,
+                                            fontSize: '14px',
+                                            textDecoration: 'none',
+                                            padding: '6px 0',
+                                            transition: 'color 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => e.target.style.color = '#4f46e5'}
+                                        onMouseLeave={(e) => e.target.style.color = '#374151'}
+                                    >
+                                        {link.label}
                                     </Link>
-                                ) : mounted && (
-                                    <Link href="/login" style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        padding: '8px 14px',
-                                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                                        color: 'white',
-                                        borderRadius: '8px',
-                                        fontWeight: 600,
-                                        fontSize: '13px',
-                                        textDecoration: 'none'
-                                    }}>
-                                        <User size={16} /> Sign In
-                                    </Link>
-                                )}
-                            </div>
+                                ))}
+                            </nav>
 
-                            {/* Mobile Menu Button */}
-                            <button
-                                className="mobile-menu-btn"
-                                onClick={() => setMobileMenuOpen(true)}
-                                aria-label="Open menu"
-                                style={{
+                            {/* Right Side Icons */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {/* Cart */}
+                                <Link href="/cart" style={{
+                                    position: 'relative',
                                     width: '36px',
                                     height: '36px',
                                     background: '#f3f4f6',
-                                    border: 'none',
                                     borderRadius: '8px',
-                                    cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center'
-                                }}
-                            >
-                                <Menu size={20} color="#374151" />
-                            </button>
+                                }}>
+                                    <ShoppingCart size={18} color="#374151" />
+                                    {mounted && cartCount > 0 && (
+                                        <span style={{
+                                            position: 'absolute',
+                                            top: -4,
+                                            right: -4,
+                                            background: '#4f46e5',
+                                            color: 'white',
+                                            fontSize: '10px',
+                                            fontWeight: 'bold',
+                                            width: '16px',
+                                            height: '16px',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            border: '2px solid white'
+                                        }}>{cartCount}</span>
+                                    )}
+                                </Link>
+
+                                {/* User - Hidden on mobile, show via hamburger menu */}
+                                <div className="hide-mobile">
+                                    {mounted && user ? (
+                                        <Link href="/profile" style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            borderRadius: '50%',
+                                            background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            overflow: 'hidden',
+                                            textDecoration: 'none',
+                                            border: '2px solid #c7d2fe'
+                                        }}>
+                                            {user.avatar ? (
+                                                <img
+                                                    src={user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`}
+                                                    alt=""
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                />
+                                            ) : (
+                                                <span style={{ color: '#4f46e5', fontWeight: 600, fontSize: '13px' }}>
+                                                    {user.name?.charAt(0).toUpperCase()}
+                                                </span>
+                                            )}
+                                        </Link>
+                                    ) : mounted && (
+                                        <Link href="/login" style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            padding: '8px 14px',
+                                            background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                            color: 'white',
+                                            borderRadius: '8px',
+                                            fontWeight: 600,
+                                            fontSize: '13px',
+                                            textDecoration: 'none'
+                                        }}>
+                                            <User size={16} /> Sign In
+                                        </Link>
+                                    )}
+                                </div>
+
+                                {/* Mobile Menu Button */}
+                                <button
+                                    className="mobile-menu-btn"
+                                    onClick={() => setMobileMenuOpen(true)}
+                                    aria-label="Open menu"
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        background: '#f3f4f6',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <Menu size={20} color="#374151" />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </header>
+                </header>
+            </div>
+            {/* Spacer to push content down since header is fixed - OUTSIDE fixed div */}
+            <div style={{
+                height: promoSettings && promoSettings.promoBarEnabled ? '84px' : '56px'
+            }} />
 
             {/* Mobile Menu Overlay */}
             <div
@@ -358,6 +368,6 @@ export default function Header() {
                     )}
                 </div>
             </div>
-        </div>
+        </>
     );
 }

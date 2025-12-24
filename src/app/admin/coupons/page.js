@@ -139,6 +139,11 @@ export default function CouponsPage() {
                                             {new Date(coupon.expiresAt) < new Date() ? 'Expired' : `Expires: ${new Date(coupon.expiresAt).toLocaleDateString()}`}
                                         </span>
                                     )}
+                                    {coupon.firstOrderOnly && (
+                                        <span style={{ padding: '4px 8px', background: '#e0e7ff', borderRadius: '4px', fontSize: '12px', color: '#4f46e5', fontWeight: 600 }}>
+                                            First Order Only
+                                        </span>
+                                    )}
                                 </div>
                                 <button
                                     onClick={() => toggleActive(coupon)}
@@ -180,6 +185,7 @@ function CouponModal({ coupon, onClose, onSave }) {
         minOrderValue: coupon?.minOrderValue || '',
         maxUses: coupon?.maxUses || '',
         expiresAt: coupon?.expiresAt ? new Date(coupon.expiresAt).toISOString().split('T')[0] : '',
+        firstOrderOnly: coupon?.firstOrderOnly || false,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -198,6 +204,7 @@ function CouponModal({ coupon, onClose, onSave }) {
                 minOrderValue: form.minOrderValue || null,
                 maxUses: form.maxUses || null,
                 expiresAt: form.expiresAt || null,
+                firstOrderOnly: form.firstOrderOnly
             };
 
             if (coupon) {
@@ -318,6 +325,19 @@ function CouponModal({ coupon, onClose, onSave }) {
                                 onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
                                 style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', outline: 'none' }}
                             />
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+                            <input
+                                type="checkbox"
+                                id="firstOrderOnly"
+                                checked={form.firstOrderOnly}
+                                onChange={(e) => setForm({ ...form, firstOrderOnly: e.target.checked })}
+                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                            />
+                            <label htmlFor="firstOrderOnly" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', cursor: 'pointer' }}>
+                                Valid for first order only
+                            </label>
                         </div>
                     </div>
 
