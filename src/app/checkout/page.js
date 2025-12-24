@@ -939,22 +939,47 @@ export default function CheckoutPage() {
                     }
                 }
 
-                @media (max-width: 768px) {
+                @media (max-width: 900px) {
                     .checkout-grid {
                         grid-template-columns: 1fr;
                     }
 
                     .order-summary-card {
                         position: static;
-                        margin-top: 16px;
-                    }
-
-                    .form-row {
-                        grid-template-columns: 1fr;
+                        margin-top: 0;
                     }
                     
+                    /* Move summary to bottom on tablet/mobile but keep it visible */
+                    .checkout-grid > div:last-child {
+                        order: 2;
+                    }
+                    .checkout-grid > div:first-child {
+                        order: 1;
+                    }
+                }
+
+                @media (max-width: 640px) {
                     .checkout-container {
-                        padding-top: 16px;
+                        padding: 16px 12px 40px;
+                    }
+                    
+                    .checkout-container h1 {
+                        font-size: 24px !important;
+                        margin-bottom: 20px !important;
+                    }
+                    
+                    .form-row {
+                        grid-template-columns: 1fr;
+                        gap: 0;
+                    }
+                    
+                    .order-summary-card {
+                        padding: 20px;
+                    }
+                    
+                    .payment-method-card {
+                        flex-direction: column;
+                        align-items: flex-start !important;
                     }
                 }
             `}</style>
