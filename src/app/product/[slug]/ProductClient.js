@@ -18,10 +18,28 @@ export default function ProductClient({ initialProduct }) {
     const { user } = useAuth();
 
     const [product, setProduct] = useState(initialProduct);
+    const [loading, setLoading] = useState(!initialProduct);
     const [selectedImage, setSelectedImage] = useState(0);
     const [inWishlist, setInWishlist] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
     const [localQuantity, setLocalQuantity] = useState(1);
+
+    // If server fetch failed, try client fetch
+    useEffect(() => {
+        if (!product && params.slug) {
+            setLoading(true);
+            api.get(`/products/${params.slug}`)
+                .then(res => {
+                    setProduct(res);
+                })
+                .catch(err => {
+                    console.error('Client-side product fetch failed:', err);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [product, params.slug]);
 
     // Get cart item if exists
     const cartItem = items.find(item => item.id === product?.id);
@@ -74,6 +92,19 @@ export default function ProductClient({ initialProduct }) {
             updateQuantity(product.id, newQty);
         }
     };
+
+    if (loading) {
+        return (
+            <>
+                <Header />
+                <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '40px', height: '40px', border: '3px solid #e5e7eb', borderTopColor: '#4f46e5', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                </main>
+                <Footer />
+            </>
+        );
+    }
 
     if (!product) {
         return (
