@@ -189,7 +189,22 @@ export default function ProfileOrdersPage() {
                                                 )}
                                             </button>
                                         )}
-                                        <Link href={`/order-confirmation/${order.id}`} className="details-btn">
+                                        <Link
+                                            href={`/order-confirmation/${order.id}`}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                padding: '6px 12px',
+                                                borderRadius: '6px',
+                                                fontWeight: 500,
+                                                fontSize: '12px',
+                                                textDecoration: 'none',
+                                                background: 'white',
+                                                color: '#374151',
+                                                border: '1px solid #d1d5db'
+                                            }}
+                                        >
                                             <Eye size={14} /> Details
                                         </Link>
                                     </div>
@@ -354,7 +369,11 @@ export default function ProfileOrdersPage() {
                 }
                 .track-btn { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
                 .invoice-btn { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; }
-                .details-btn { background: #f3f4f6; color: #374151; }
+                .details-btn { 
+                    background: white; 
+                    color: #374151; 
+                    border: 1px solid #d1d5db;
+                }
 
                 @media (max-width: 768px) {
                     .page-header { flex-direction: column; align-items: flex-start; }
